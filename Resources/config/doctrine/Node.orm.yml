@@ -1,0 +1,28 @@
+MandarinMedien\MMCmfNodeBundle\Entity\Node:
+    type: entity
+    table: null
+    inheritanceType: JOINED
+    repositoryClass: MandarinMedien\MMCmfNodeBundle\Repository\NodeRepository
+    id:
+        id:
+            type: integer
+            id: true
+            generator:
+                strategy: AUTO
+    fields:
+        name:
+            type: string
+            length: 255
+            nullable: true
+
+    oneToMany:
+        nodes:
+            targetEntity: MandarinMedien\MMCmfNodeBundle\Entity\Node
+            mappedBy: parent
+
+    manyToOne:
+        parent:
+            targetEntity: MandarinMedien\MMCmfNodeBundle\Entity\Node
+            inversedBy: nodes
+
+    lifecycleCallbacks: {  }
