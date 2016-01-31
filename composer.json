@@ -1,0 +1,16 @@
+{
+  "name": "mandarinmedien/mmcmfnodebundle",
+  "description": "base node entity for mmcmf",
+  "type" : "symfony-bundle",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Christof Hufnagel",
+      "email": "ch@mandarin-medien.de"
+    },
+    {
+      "name": "Toni Gurski",
+      "email": "tg@mandarin-medien.de"
+    }
+  ]
+}

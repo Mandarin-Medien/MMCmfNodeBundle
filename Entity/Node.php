@@ -55,7 +55,7 @@ class Node implements NodeInterface
      * @param string $name
      * @return Node
      */
-    public function setName(string $name)
+    public function setName($name)
     {
         $this->name = $name;
         return $this;
