@@ -13,30 +13,24 @@ class Node implements NodeInterface
     /**
      * @var int
      */
-    private $id;
+    protected $id;
 
     /**
      * @var string
      */
-    private $name;
-
-
-    /**
-     * @var int
-     */
-    private $page;
+    protected $name;
 
 
     /**
      * @var NodeInterface
      */
-    private $parent;
+    protected $parent;
 
 
     /**
      * @var ArrayCollection
      */
-    private $nodes;
+    protected $nodes;
 
 
     /**
