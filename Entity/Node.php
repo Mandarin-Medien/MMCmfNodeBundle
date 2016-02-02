@@ -4,6 +4,7 @@ namespace MandarinMedien\MMCmfNodeBundle\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
+use MandarinMedien\MMCmfRoutingBundle\Entity\NodeRoute;
 
 /**
  * Node
@@ -31,6 +32,12 @@ class Node implements NodeInterface
      * @var ArrayCollection
      */
     protected $nodes;
+
+
+    /**
+     * @var NodeRoute
+     */
+    protected $route;
 
 
     /**
@@ -122,4 +129,25 @@ class Node implements NodeInterface
         $this->nodes->removeElement($node);
         return $this;
     }
+
+
+    /**
+     * @return NodeRoute
+     */
+    public function getRoute()
+    {
+        return $this->route;
+    }
+
+    /**
+     * @param NodeRoute $route
+     * @return Node
+     */
+    public function setRoute($route)
+    {
+        $this->route = $route;
+        return $this;
+    }
+
+
 }
