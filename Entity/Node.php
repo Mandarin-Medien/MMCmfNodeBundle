@@ -40,7 +40,9 @@ class Node implements NodeInterface
     protected $routes;
 
 
-
+    /**
+     * Node constructor.
+     */
     public function __construct()
     {
         $this->nodes = new ArrayCollection();
@@ -91,7 +93,7 @@ class Node implements NodeInterface
     }
 
     /**
-     * @param NodeInterface $parent
+     * @param NodeInterface $node
      */
     public function setParent(NodeInterface $node)
     {
@@ -113,6 +115,10 @@ class Node implements NodeInterface
     public function setNodes(ArrayCollection $nodes)
     {
         $this->nodes = $nodes;
+
+        foreach($this->nodes as $node)
+            $node->setParent($this);
+
         return $this;
     }
 
@@ -124,6 +130,8 @@ class Node implements NodeInterface
     public function addNode(NodeInterface $node)
     {
         $this->nodes->add($node);
+        $node->setParent($this);
+
         return $this;
     }
 
@@ -134,13 +142,16 @@ class Node implements NodeInterface
      */
     public function removeNode(NodeInterface $node)
     {
+
         $this->nodes->removeElement($node);
+        $node->setParent(null);
+
         return $this;
     }
 
 
     /**
-     * @return NodeRoute
+     * @return NodeRoute[]
      */
     public function getRoutes()
     {
@@ -148,10 +159,10 @@ class Node implements NodeInterface
     }
 
     /**
-     * @param NodeRoute[] $routes
+     * @param ArrayCollection $routes
      * @return Node
      */
-    public function setRoute($routes)
+    public function setRoutes(ArrayCollection $routes)
     {
         $this->routes = $routes;
         return $this;
@@ -176,6 +187,7 @@ class Node implements NodeInterface
     public function removeRoute(NodeRoute $route)
     {
         $this->routes->removeElement($route);
+        $route->setNode(null);
         return $this;
     }
 }
