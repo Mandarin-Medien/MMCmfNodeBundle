@@ -15,15 +15,14 @@ MandarinMedien\MMCmfNodeBundle\Entity\Node:
             length: 255
             nullable: true
 
-    oneToOne:
-        route:
-            targetEntity: MandarinMedien\MMCmfRoutingBundle\Entity\NodeRoute
-            mappedBy: node
-
     oneToMany:
         nodes:
             targetEntity: MandarinMedien\MMCmfNodeBundle\Entity\Node
             mappedBy: parent
+
+        routes:
+            targetEntity: MandarinMedien\MMCmfRoutingBundle\Entity\NodeRoute
+            mappedBy: node
 
     manyToOne:
         parent:

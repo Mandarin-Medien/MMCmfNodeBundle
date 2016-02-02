@@ -35,9 +35,17 @@ class Node implements NodeInterface
 
 
     /**
-     * @var NodeRoute
+     * @var NodeRoute[]
      */
-    protected $route;
+    protected $routes;
+
+
+
+    public function __construct()
+    {
+        $this->nodes = new ArrayCollection();
+        $this->routes = new ArrayCollection();
+    }
 
 
     /**
@@ -134,20 +142,40 @@ class Node implements NodeInterface
     /**
      * @return NodeRoute
      */
-    public function getRoute()
+    public function getRoutes()
     {
-        return $this->route;
+        return $this->routes;
+    }
+
+    /**
+     * @param NodeRoute[] $routes
+     * @return Node
+     */
+    public function setRoute($routes)
+    {
+        $this->routes = $routes;
+        return $this;
     }
 
     /**
      * @param NodeRoute $route
-     * @return Node
+     * @return $this
      */
-    public function setRoute($route)
+    public function addRoute(NodeRoute $route)
     {
-        $this->route = $route;
+        $this->routes->add($route);
+        $route->setNode($this);
         return $this;
     }
 
 
+    /**
+     * @param NodeRoute $route
+     * @return $this
+     */
+    public function removeRoute(NodeRoute $route)
+    {
+        $this->routes->removeElement($route);
+        return $this;
+    }
 }
