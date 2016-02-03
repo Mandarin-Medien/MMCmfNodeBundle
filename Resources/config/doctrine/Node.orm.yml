@@ -23,6 +23,8 @@ MandarinMedien\MMCmfNodeBundle\Entity\Node:
         routes:
             targetEntity: MandarinMedien\MMCmfRoutingBundle\Entity\NodeRoute
             mappedBy: node
+            cascade:
+                - persist
 
     manyToOne:
         parent:

@@ -193,4 +193,10 @@ class Node implements NodeInterface
         $route->setNode(null);
         return $this;
     }
+
+
+    public function __toString()
+    {
+        return $this->getName();
+    }
 }
