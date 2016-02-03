@@ -44,12 +44,19 @@ class Node implements NodeInterface
 
 
     /**
+     * @var boolean
+     */
+    protected $routeGeneration;
+
+
+    /**
      * Node constructor.
      */
     public function __construct()
     {
         $this->nodes = new ArrayCollection();
         $this->routes = new ArrayCollection();
+        $this->routeGeneration = false;
     }
 
 
@@ -198,5 +205,23 @@ class Node implements NodeInterface
     public function __toString()
     {
         return $this->getName();
+    }
+
+    /**
+     * @return boolean
+     */
+    public function isRouteGeneration()
+    {
+        return $this->routeGeneration;
+    }
+
+    /**
+     * @param boolean $routeGeneration
+     * @return Node
+     */
+    public function setRouteGeneration($routeGeneration)
+    {
+        $this->routeGeneration = $routeGeneration;
+        return $this;
     }
 }
