@@ -44,9 +44,15 @@ class Node implements NodeInterface
 
 
     /**
+     * @var int
+     */
+    protected $position;
+
+
+    /**
      * @var boolean
      */
-    protected $routeGeneration;
+    protected $routeGeneration = false;
 
 
     /**
@@ -56,7 +62,6 @@ class Node implements NodeInterface
     {
         $this->nodes = new ArrayCollection();
         $this->routes = new ArrayCollection();
-        $this->routeGeneration = false;
     }
 
 
@@ -222,6 +227,26 @@ class Node implements NodeInterface
     public function setRouteGeneration($routeGeneration)
     {
         $this->routeGeneration = $routeGeneration;
+        return $this;
+    }
+
+
+    /**
+     * @return int
+     */
+    public function getPosition()
+    {
+        return $this->position;
+    }
+
+
+    /**
+     * @param int $position
+     * @return Node
+     */
+    public function setPosition($position)
+    {
+        $this->position = $position;
         return $this;
     }
 }

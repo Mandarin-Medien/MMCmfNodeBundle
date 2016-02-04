@@ -14,6 +14,8 @@ MandarinMedien\MMCmfNodeBundle\Entity\Node:
             type: string
             length: 255
             nullable: true
+        position:
+            type: integer
 
     oneToMany:
         nodes:

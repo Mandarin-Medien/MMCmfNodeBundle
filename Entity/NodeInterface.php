@@ -23,6 +23,10 @@ interface NodeInterface
     public function setParent(NodeInterface $node);
 
     public function getParent();
+
+    public function setPosition($position);
+
+    public function getPosition();
 }
 
 
