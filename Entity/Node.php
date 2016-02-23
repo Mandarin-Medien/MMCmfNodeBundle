@@ -46,7 +46,7 @@ class Node implements NodeInterface
     /**
      * @var int
      */
-    protected $position;
+    protected $position = 0;
 
 
     /**
