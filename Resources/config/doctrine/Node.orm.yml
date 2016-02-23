@@ -32,5 +32,6 @@ MandarinMedien\MMCmfNodeBundle\Entity\Node:
         parent:
             targetEntity: MandarinMedien\MMCmfNodeBundle\Entity\Node
             inversedBy: nodes
+            nullable: true
 
     lifecycleCallbacks: {  }
