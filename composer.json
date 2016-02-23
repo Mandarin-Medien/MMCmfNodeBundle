@@ -14,7 +14,7 @@
     }
   ],
   "require": {
-    "mandarinmedien/mmcmfroutingbundle": "0.*"
+    "mandarinmedien/mmcmfroutingbundle": "dev-master"
   },
   "repositories": [
     {
