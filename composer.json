@@ -22,10 +22,10 @@
       "url": "git@github.com:Mandarin-Medien/MMCmfRoutingBundle.git"
     }
   ],
-  "autoload" : {
-    "psr-0" : {
-      "MandarinMedien\\MMCmfNodeBundle" : ""
+  "autoload": {
+    "psr-0": {
+      "MandarinMedien\\MMCmfNodeBundle": ""
     }
   },
-  "target-dir" : "MandarinMedien/MMCmfNodeBundle"
+  "target-dir": "MandarinMedien/MMCmfNodeBundle"
 }
