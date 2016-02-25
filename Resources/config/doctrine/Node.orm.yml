@@ -33,10 +33,10 @@ MandarinMedien\MMCmfNodeBundle\Entity\Node:
     manyToOne:
         parent:
             targetEntity: MandarinMedien\MMCmfNodeBundle\Entity\Node
+            joinColumn:
+                  onDelete: "SET NULL"
             inversedBy: nodes
             nullable: true
-            cascade:
-                - all
 
 
     lifecycleCallbacks: {  }
