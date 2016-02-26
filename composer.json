@@ -1,7 +1,7 @@
 {
   "name": "mandarinmedien/mmcmfnodebundle",
   "description": "base node entity for mmcmf",
-  "type" : "symfony-bundle",
+  "type": "symfony-bundle",
   "license": "MIT",
   "authors": [
     {
@@ -13,19 +13,13 @@
       "email": "tg@mandarin-medien.de"
     }
   ],
-  "require": {
-    "mandarinmedien/mmcmfroutingbundle": "^0.0"
-  },
-  "repositories": [
-    {
-      "type": "git",
-      "url": "git@github.com:Mandarin-Medien/MMCmfRoutingBundle.git"
-    }
-  ],
   "autoload": {
     "psr-0": {
       "MandarinMedien\\MMCmfNodeBundle": ""
     }
   },
-  "target-dir": "MandarinMedien/MMCmfNodeBundle"
+  "target-dir": "MandarinMedien/MMCmfNodeBundle",
+  "require": {
+    "mandarinmedien/mmcmfroutingbundle": "^0.0"
+  }
 }
