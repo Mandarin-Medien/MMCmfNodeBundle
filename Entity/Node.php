@@ -108,7 +108,8 @@ class Node implements NodeInterface
     }
 
     /**
-     * @param NodeInterface $node
+     * @param NodeInterface|null $node
+     * @return $this
      */
     public function setParent(NodeInterface $node = null)
     {

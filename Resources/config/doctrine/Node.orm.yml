@@ -21,6 +21,7 @@ MandarinMedien\MMCmfNodeBundle\Entity\Node:
         nodes:
             targetEntity: MandarinMedien\MMCmfNodeBundle\Entity\Node
             mappedBy: parent
+            orderBy: { 'position': 'ASC' }
             cascade:
                 - all
 
