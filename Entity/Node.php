@@ -19,6 +19,7 @@ class Node implements NodeInterface
 
     /**
      * @var string
+     * @Assert\NotBlank
      */
     protected $name;
 

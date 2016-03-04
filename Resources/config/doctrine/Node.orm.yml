@@ -13,7 +13,7 @@ MandarinMedien\MMCmfNodeBundle\Entity\Node:
         name:
             type: string
             length: 255
-            nullable: true
+            nullable: false
         position:
             type: integer
 
