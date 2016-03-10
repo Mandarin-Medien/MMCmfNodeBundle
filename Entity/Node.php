@@ -71,7 +71,7 @@ class Node implements NodeInterface
     /**
      * Get id
      *
-     * @return integer 
+     * @return integer
      */
     public function getId()
     {
@@ -94,7 +94,7 @@ class Node implements NodeInterface
     /**
      * Get name
      *
-     * @return string 
+     * @return string
      */
     public function getName()
     {
@@ -116,7 +116,7 @@ class Node implements NodeInterface
      */
     public function setParent(NodeInterface $node = null)
     {
-        if($node)
+        if ($node)
             $this->parent = $node;
 
         return $this;
@@ -138,7 +138,7 @@ class Node implements NodeInterface
     {
         $this->nodes = $nodes;
 
-        foreach($this->nodes as $node)
+        foreach ($this->nodes as $node)
             $node->setParent($this);
 
         return $this;
