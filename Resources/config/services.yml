@@ -1,4 +1,8 @@
 services:
-#    mm_cmf_page.example:
-#        class: MandarinMedien\MMCmfNodeBundle\Example
-#        arguments: ["@service_id", "plain_value", %parameter%]
+      # Validation Constraints
+      mm_cmf_node.validator.no_node_recursion:
+          class: MandarinMedien\MMCmfNodeBundle\Validator\NoNodeRecursionValidator
+          calls:
+              - ["setManager", [@doctrine.orm.entity_manager]]
+          tags:
+              - { name: validator.constraint_validator, alias: "no_node_recursion" }

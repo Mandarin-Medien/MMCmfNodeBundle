@@ -6,9 +6,11 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use MandarinMedien\MMCmfRoutingBundle\Entity\NodeRoute;
 use Symfony\Component\Validator\Constraints as Assert;
+use MandarinMedien\MMCmfNodeBundle\Validator\Constraint as NodeAssert;
 
 /**
  * Node
+ * @NodeAssert\NoNodeRecursion
  */
 class Node implements NodeInterface
 {
