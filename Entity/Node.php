@@ -53,6 +53,13 @@ class Node implements NodeInterface
 
 
     /**
+     * @var bool
+     */
+    protected $visible = false;
+
+
+
+    /**
      * @var boolean
      */
     protected $routeGeneration = false;
@@ -256,4 +263,24 @@ class Node implements NodeInterface
         $this->position = $position;
         return $this;
     }
+
+
+    /**
+     * @return boolean
+     */
+    public function isVisible()
+    {
+        return $this->visible;
+    }
+
+    /**
+     * @param boolean $visible
+     * @return Node
+     */
+    public function setVisible($visible)
+    {
+        $this->visible = $visible;
+        return $this;
+    }
+
 }

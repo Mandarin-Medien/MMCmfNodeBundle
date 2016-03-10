@@ -27,6 +27,10 @@ interface NodeInterface
     public function setPosition($position);
 
     public function getPosition();
+
+    public function isVisible();
+
+    public function setVisible($visible);
 }
 
 

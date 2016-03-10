@@ -16,6 +16,8 @@ MandarinMedien\MMCmfNodeBundle\Entity\Node:
             nullable: false
         position:
             type: integer
+        visible:
+            type: boolean
 
     oneToMany:
         nodes:
