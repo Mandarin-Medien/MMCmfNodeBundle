@@ -22,8 +22,8 @@ class NoNodeRecursionValidator extends ConstraintValidator
 
     public function validate($node = null, Constraint $constraint)
     {
-
-        if(!is_null($node)) return;
+        
+        if(is_null($node)) return;
 
         if($this->inTree($node->getParent(), $node)) {
             $this->context->buildViolation($constraint->message)
