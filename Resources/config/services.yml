@@ -6,3 +6,16 @@ services:
               - ["setManager", [@doctrine.orm.entity_manager]]
           tags:
               - { name: validator.constraint_validator, alias: "no_node_recursion" }
+
+
+      # configure the visibilty filter on request
+      mm_cmf_node.doctrine_filter.config:
+          class: MandarinMedien\MMCmfNodeBundle\Doctrine\Filter\VisibilityFilterConfigurator
+          arguments:
+              - "@doctrine.orm.entity_manager"
+              - "@security.token_storage"
+          calls:
+              - ['setRoles', [["ROLE_ADMIN", "ROLE_USER"]]]
+
+          tags:
+              - { name: kernel.event_listener, event: kernel.request }
