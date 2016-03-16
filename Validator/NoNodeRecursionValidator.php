@@ -3,6 +3,7 @@
 namespace MandarinMedien\MMCmfNodeBundle\Validator;
 
 use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityManagerInterface;
 use MandarinMedien\MMCmfNodeBundle\Entity\Node;
 use MandarinMedien\MMCmfNodeBundle\Entity\NodeInterface;
 use Symfony\Component\Validator\Constraint;
@@ -13,17 +14,22 @@ use Symfony\Component\Validator\ConstraintValidator;
  */
 class NoNodeRecursionValidator extends ConstraintValidator
 {
-    private $repositoryClass = Node::class;
 
     /**
-     * @var EntityManager
+     * @var EntityManagerInterface
      */
     private $manager;
 
+
+    /**
+     * {@inheritdoc}
+     */
     public function validate($node = null, Constraint $constraint)
     {
-        
-        if(is_null($node)) return;
+        /**
+         * @var $node NodeInterface
+         */
+        if(is_null($node) || is_null($node->getParent())) return;
 
         if($this->inTree($node->getParent(), $node)) {
             $this->context->buildViolation($constraint->message)
@@ -33,6 +39,13 @@ class NoNodeRecursionValidator extends ConstraintValidator
     }
 
 
+    /**
+     * check the node tree for recursion
+     *
+     * @param NodeInterface $node1
+     * @param NodeInterface $node2
+     * @return bool
+     */
     protected function inTree(NodeInterface $node1, NodeInterface $node2)
     {
         if($node1 == $node2) {
@@ -45,7 +58,10 @@ class NoNodeRecursionValidator extends ConstraintValidator
     }
 
 
-    public function setManager(EntityManager $manager)
+    /**
+     * @param EntityManagerInterface $manager
+     */
+    public function setManager(EntityManagerInterface $manager)
     {
         $this->manager = $manager;
     }
