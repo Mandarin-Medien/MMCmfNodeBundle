@@ -130,7 +130,7 @@ class Node implements NodeInterface
     }
 
     /**
-     * @return NodeInterface[]
+     * @return NodeInterface[]|ArrayCollection
      */
     public function getNodes()
     {
@@ -138,7 +138,7 @@ class Node implements NodeInterface
     }
 
     /**
-     * @param ArrayCollection $nodes
+     * @param ArrayCollection|NodeInterface[] $nodes
      * @return Node
      */
     public function setNodes(ArrayCollection $nodes)

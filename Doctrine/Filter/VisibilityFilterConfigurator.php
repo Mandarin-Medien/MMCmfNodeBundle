@@ -8,11 +8,27 @@ use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInt
 use Doctrine\Common\Persistence\ObjectManager;
 use Doctrine\Common\Annotations\Reader;
 
+/**
+ * Class VisibilityFilterConfigurator
+ * @package MandarinMedien\MMCmfNodeBundle\Doctrine\Filter
+ */
 class VisibilityFilterConfigurator
 {
+    /**
+     * @var EntityManagerInterface
+     */
     protected $em;
+    /**
+     * @var TokenStorageInterface
+     */
     protected $tokenStorage;
+    /**
+     * @var array
+     */
     protected $roles;
+    /**
+     * @var string
+     */
     protected $name = 'visibility_filter';
 
     public function __construct(EntityManagerInterface $em, TokenStorageInterface $tokenStorage)
@@ -26,6 +42,9 @@ class VisibilityFilterConfigurator
     {
 
         if($this->em->getFilters()->isEnabled($this->name)) {
+            /**
+             * @var $filter VisibilityFilter
+             */
             $filter = $this->em->getFilters()->getFilter($this->name);
 
 
@@ -37,11 +56,17 @@ class VisibilityFilterConfigurator
         }
     }
 
+    /**
+     * @param array $roles
+     */
     public function setRoles(array $roles)
     {
         $this->roles = $roles;
     }
 
+    /**
+     * @return mixed|null
+     */
     private function getUser()
     {
         $token = $this->tokenStorage->getToken();
