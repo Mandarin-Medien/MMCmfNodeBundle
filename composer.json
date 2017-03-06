@@ -20,6 +20,6 @@
   },
   "target-dir": "MandarinMedien/MMCmfNodeBundle",
   "require": {
-    "mandarinmedien/mmcmfroutingbundle": "^0.0"
+    "mandarinmedien/mmcmfroutingbundle": "^0.1"
   }
 }
