@@ -1,4 +1,9 @@
 services:
+
+      mm_cmf_node.factory:
+          class: MandarinMedien\MMCmfNodeBundle\Factory\NodeFactory
+          arguments: ["@doctrine.orm.entity_manager"]
+
       # Validation Constraints
       mm_cmf_node.validator.no_node_recursion:
           class: MandarinMedien\MMCmfNodeBundle\Validator\NoNodeRecursionValidator
