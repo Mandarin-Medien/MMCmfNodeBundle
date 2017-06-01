@@ -39,14 +39,6 @@ class Node implements NodeInterface
 
 
     /**
-     * @var NodeRoute[]
-     *
-     * @Assert\Valid
-     */
-    protected $routes;
-
-
-    /**
      * @var int
      */
     protected $position = 0;
@@ -60,18 +52,11 @@ class Node implements NodeInterface
 
 
     /**
-     * @var boolean
-     */
-    protected $routeGeneration = false;
-
-
-    /**
      * Node constructor.
      */
     public function __construct()
     {
         $this->nodes = new ArrayCollection();
-        $this->routes = new ArrayCollection();
     }
 
 
@@ -176,70 +161,9 @@ class Node implements NodeInterface
         return $this;
     }
 
-
-    /**
-     * @return NodeRoute[]
-     */
-    public function getRoutes()
-    {
-        return $this->routes;
-    }
-
-    /**
-     * @param ArrayCollection $routes
-     * @return Node
-     */
-    public function setRoutes(ArrayCollection $routes)
-    {
-        $this->routes = $routes;
-        return $this;
-    }
-
-    /**
-     * @param NodeRoute $route
-     * @return $this
-     */
-    public function addRoute(NodeRoute $route)
-    {
-        $this->routes->add($route);
-        $route->setNode($this);
-        return $this;
-    }
-
-
-    /**
-     * @param NodeRoute $route
-     * @return $this
-     */
-    public function removeRoute(NodeRoute $route)
-    {
-        $this->routes->removeElement($route);
-        $route->setNode(null);
-        return $this;
-    }
-
-
     public function __toString()
     {
         return (string)$this->getName();
-    }
-
-    /**
-     * @return boolean
-     */
-    public function isRouteGeneration()
-    {
-        return $this->routeGeneration;
-    }
-
-    /**
-     * @param boolean $routeGeneration
-     * @return Node
-     */
-    public function setRouteGeneration($routeGeneration)
-    {
-        $this->routeGeneration = $routeGeneration;
-        return $this;
     }
 
 

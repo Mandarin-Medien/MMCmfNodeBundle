@@ -18,8 +18,5 @@
       "MandarinMedien\\MMCmfNodeBundle": ""
     }
   },
-  "target-dir": "MandarinMedien/MMCmfNodeBundle",
-  "require": {
-    "mandarinmedien/mmcmfroutingbundle": "^0.1"
-  }
+  "target-dir": "MandarinMedien/MMCmfNodeBundle"
 }

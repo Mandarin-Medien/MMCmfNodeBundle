@@ -27,12 +27,6 @@ MandarinMedien\MMCmfNodeBundle\Entity\Node:
             cascade:
                 - all
 
-        routes:
-            targetEntity: MandarinMedien\MMCmfRoutingBundle\Entity\NodeRoute
-            mappedBy: node
-            cascade:
-                - all
-
     manyToOne:
         parent:
             targetEntity: MandarinMedien\MMCmfNodeBundle\Entity\Node
