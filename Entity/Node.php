@@ -123,9 +123,7 @@ class Node implements NodeInterface
      */
     public function setParent(NodeInterface $node = null)
     {
-        if ($node)
-            $this->parent = $node;
-
+        $this->parent = $node;
         return $this;
     }
 
