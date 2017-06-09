@@ -11,11 +11,24 @@ use MandarinMedien\MMCmfNodeBundle\Exception\InvalidArgumentException;
 class NodeFactory
 {
 
+    /**
+     * @var EntityManagerInterface
+     */
     private $manager;
+
+    /**
+     * @var string
+     */
     private $factory_class = Node::class;
+
+    /**
+     * @var \Doctrine\ORM\Mapping\ClassMetadata
+     */
     private $meta;
 
-
+    /**
+     * @var array
+     */
     protected $childDefintions;
 
 
@@ -142,13 +155,14 @@ class NodeFactory
     }
 
 
+
     /**
      * get al list of configured child nodes
      * @param $parent
-     * @return mixed
+     * @return array
      */
     public function getChildNodeDefinition($parent)
     {
-        return $this->childDefintions[$parent];
+        return isset($this->childDefintions[$parent]) ? $this->childDefintions[$parent] : [];
     }
 }
