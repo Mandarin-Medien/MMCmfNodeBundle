@@ -1,26 +1,33 @@
 services:
 
-      mm_cmf_node.factory:
-          class: MandarinMedien\MMCmfNodeBundle\Factory\NodeFactory
-          arguments: ["@doctrine.orm.entity_manager"]
+    mm_cmf_node.gedmo.sortable:
+        class: Gedmo\Sortable\SortableListener
+        tags:
+            - { name: doctrine.event_subscriber, connection: default }
+        calls:
+            - ['setAnnotationReader', ['@annotation_reader']]
 
-      # Validation Constraints
-      mm_cmf_node.validator.no_node_recursion:
-          class: MandarinMedien\MMCmfNodeBundle\Validator\NoNodeRecursionValidator
-          calls:
-              - ["setManager", ["@doctrine.orm.entity_manager"]]
-          tags:
-              - { name: validator.constraint_validator, alias: "no_node_recursion" }
+    mm_cmf_node.factory:
+        class: MandarinMedien\MMCmfNodeBundle\Factory\NodeFactory
+        arguments: ["@doctrine.orm.entity_manager"]
+
+    # Validation Constraints
+    mm_cmf_node.validator.no_node_recursion:
+        class: MandarinMedien\MMCmfNodeBundle\Validator\NoNodeRecursionValidator
+        calls:
+            - ["setManager", ["@doctrine.orm.entity_manager"]]
+        tags:
+            - { name: validator.constraint_validator, alias: "no_node_recursion" }
 
 
-      # configure the visibilty filter on request
-      mm_cmf_node.doctrine_filter.config:
-          class: MandarinMedien\MMCmfNodeBundle\Doctrine\Filter\VisibilityFilterConfigurator
-          arguments:
-              - "@doctrine.orm.entity_manager"
-              - "@security.token_storage"
-          calls:
-              - ['setRoles', [["ROLE_ADMIN", "ROLE_USER"]]]
+    # configure the visibilty filter on request
+    mm_cmf_node.doctrine_filter.config:
+        class: MandarinMedien\MMCmfNodeBundle\Doctrine\Filter\VisibilityFilterConfigurator
+        arguments:
+            - "@doctrine.orm.entity_manager"
+            - "@security.token_storage"
+        calls:
+            - ['setRoles', [["ROLE_ADMIN", "ROLE_USER"]]]
 
-          tags:
-              - { name: kernel.event_listener, event: kernel.request }
+        tags:
+            - { name: kernel.event_listener, event: kernel.request }

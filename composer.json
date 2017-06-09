@@ -18,5 +18,8 @@
       "MandarinMedien\\MMCmfNodeBundle": ""
     }
   },
+  "require": {
+    "gedmo/doctrine-extensions": "dev-master"
+  },
   "target-dir": "MandarinMedien/MMCmfNodeBundle"
 }

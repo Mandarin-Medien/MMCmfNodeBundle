@@ -16,6 +16,10 @@ MandarinMedien\MMCmfNodeBundle\Entity\Node:
             nullable: false
         position:
             type: integer
+            gedmo:
+                sortable:
+                    groups:
+                      - parent
         visible:
             type: boolean
 
