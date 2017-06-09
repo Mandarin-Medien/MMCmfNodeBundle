@@ -24,5 +24,25 @@ class MMCmfNodeExtension extends Extension
 
         $loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
         $loader->load('services.yml');
+
+
+        // process
+        $nodeFactory = $container->getDefinition('mm_cmf_node.factory');
+
+        if($config['nodes']) {
+
+            foreach($config['nodes'] as $parentClass => $subConfig) {
+
+                if($subConfig['children']) {
+                    foreach ($subConfig['children'] as $childClass) {
+                        $nodeFactory->addMethodCall("addChildNodeDefinition", array(
+                            $parentClass,
+                            $childClass
+                        ));
+                    }
+                }
+            }
+        }
+
     }
 }

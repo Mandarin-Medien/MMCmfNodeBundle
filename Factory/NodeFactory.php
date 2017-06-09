@@ -5,6 +5,7 @@ namespace MandarinMedien\MMCmfNodeBundle\Factory;
 use Doctrine\ORM\EntityManagerInterface;
 use MandarinMedien\MMCmfNodeBundle\Entity\Node;
 use MandarinMedien\MMCmfNodeBundle\Entity\NodeInterface;
+use MandarinMedien\MMCmfNodeBundle\Exception\InvalidArgumentException;
 
 
 class NodeFactory
@@ -15,12 +16,16 @@ class NodeFactory
     private $meta;
 
 
+    protected $childDefintions;
+
+
     /**
      * ContentNodeFactory constructor.
      * @param EntityManagerInterface $manager
      */
     public function __construct(EntityManagerInterface $manager)
     {
+        $this->childDefintions = [];
         $this->manager = $manager;
         $this->meta = $this->manager->getClassMetadata(
             $this->factory_class
@@ -107,5 +112,43 @@ class NodeFactory
         } else {
             throw new \Exception('class not found');
         }
+    }
+
+
+    /**
+     * @param $parent
+     * @param $child
+     * @return $this
+     * @throws InvalidArgumentException
+     */
+    public function addChildNodeDefinition($parent, $child)
+    {
+
+        $reflectionParent = new \ReflectionClass($parent);
+        if(!$reflectionParent->implementsInterface(NodeInterface::class)) {
+            throw new InvalidArgumentException('Parent Node must implement '.NodeInterface::class);
+        }
+
+        $reflectionParent = new \ReflectionClass($child);
+        if(!$reflectionParent->implementsInterface(NodeInterface::class)) {
+            throw new InvalidArgumentException('Child Node must implement '.NodeInterface::class);
+        }
+
+
+        if(!isset($this->childDefintions[$parent])) $this->childDefintions[$parent] = [];
+        if(!in_array($child, $this->childDefintions[$parent])) $this->childDefintions[$parent][] = $child;
+
+        return $this;
+    }
+
+
+    /**
+     * get al list of configured child nodes
+     * @param $parent
+     * @return mixed
+     */
+    public function getChildNodeDefinition($parent)
+    {
+        return $this->childDefintions[$parent];
     }
 }

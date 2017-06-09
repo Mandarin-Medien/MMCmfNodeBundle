@@ -20,6 +20,19 @@ class Configuration implements ConfigurationInterface
         $treeBuilder = new TreeBuilder();
         $rootNode = $treeBuilder->root('mm_cmf_node');
 
+        $rootNode
+            ->children()
+                ->arrayNode('nodes')
+                     ->prototype('array')
+                        ->children()
+                            ->arrayNode('children')
+                                ->prototype('scalar')->end()
+                            ->end()
+                        ->end()
+                    ->end()
+                ->end()
+            ->end();
+
         // Here you should define the parameters that are allowed to
         // configure your bundle. See the documentation linked above for
         // more information on that topic.
