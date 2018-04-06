@@ -2,13 +2,10 @@
 
 namespace MandarinMedien\MMCmfNodeBundle\Entity;
 
-use Doctrine\Common\Collections\ArrayCollection;
 
 interface NodeInterface
 {
     public function addNode(NodeInterface $node);
-
-    public function setNodes(ArrayCollection $nodes);
 
     public function removeNode(NodeInterface $node);
 

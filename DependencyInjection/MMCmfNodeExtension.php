@@ -31,6 +31,8 @@ class MMCmfNodeExtension extends Extension
 
         if($config['nodes']) {
 
+            $nodeFactory->addMethodCall("setRootClass", [$config['class']]);
+
             foreach($config['nodes'] as $parentClass => $subConfig) {
 
                 if($subConfig['children']) {

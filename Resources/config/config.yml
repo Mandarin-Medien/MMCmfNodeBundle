@@ -1,0 +1,6 @@
+mm_cmf_node:
+    class: MMCmfNodeBundle\Entity\Node
+    nodes:
+        MMCmfContentBundle\Entity\Page:
+            children:
+                - MMCmfContentBundle\Entity\Page

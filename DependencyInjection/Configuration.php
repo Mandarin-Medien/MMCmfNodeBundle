@@ -2,6 +2,7 @@
 
 namespace MandarinMedien\MMCmfNodeBundle\DependencyInjection;
 
+use MandarinMedien\MMCmfNodeBundle\Entity\Node;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
 
@@ -22,6 +23,7 @@ class Configuration implements ConfigurationInterface
 
         $rootNode
             ->children()
+                ->scalarNode('class')->defaultValue(Node::class)->end()
                 ->arrayNode('nodes')
                      ->prototype('array')
                         ->children()

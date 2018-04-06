@@ -19,7 +19,7 @@ class NodeFactory
     /**
      * @var string
      */
-    private $factory_class = Node::class;
+    private $rootClass;
 
     /**
      * @var \Doctrine\ORM\Mapping\ClassMetadata
@@ -40,9 +40,6 @@ class NodeFactory
     {
         $this->childDefintions = [];
         $this->manager = $manager;
-        $this->meta = $this->manager->getClassMetadata(
-            $this->factory_class
-        );
     }
 
 
@@ -75,10 +72,10 @@ class NodeFactory
     {
 
         // prefilter discriminators by subclasses
-        $subclasses = $this->meta->subClasses;
+        $subclasses = $this->getMeta()->subClasses;
 
         $discriminators = array_filter(
-            $this->meta->discriminatorMap,
+            $this->getMeta()->discriminatorMap,
             function($class) use ($subclasses)
             {
                 return in_array($class, $subclasses);
@@ -120,7 +117,7 @@ class NodeFactory
      */
     public function getClassByDiscriminator($discriminator)
     {
-        if ($class = ($this->meta->discriminatorMap[$discriminator])) {
+        if ($class = ($this->getMeta()->discriminatorMap[$discriminator])) {
             return $class;
         } else {
             throw new \Exception('class not found');
@@ -132,19 +129,19 @@ class NodeFactory
      * @param $parent
      * @param $child
      * @return $this
-     * @throws InvalidArgumentException
+     * @throws \ReflectionException
      */
     public function addChildNodeDefinition($parent, $child)
     {
 
         $reflectionParent = new \ReflectionClass($parent);
         if(!$reflectionParent->implementsInterface(NodeInterface::class)) {
-            throw new InvalidArgumentException('Parent Node must implement '.NodeInterface::class);
+            throw new \InvalidArgumentException('Parent Node must implement '.NodeInterface::class);
         }
 
         $reflectionParent = new \ReflectionClass($child);
         if(!$reflectionParent->implementsInterface(NodeInterface::class)) {
-            throw new InvalidArgumentException('Child Node must implement '.NodeInterface::class);
+            throw new \InvalidArgumentException('Child Node must implement '.NodeInterface::class);
         }
 
 
@@ -165,4 +162,32 @@ class NodeFactory
     {
         return isset($this->childDefintions[$parent]) ? $this->childDefintions[$parent] : [];
     }
+
+
+    /**
+     * @param string $rootClass
+     * @throws \ReflectionException|\InvalidArgumentException
+     */
+    public function setRootClass(string $rootClass)
+    {
+        $reflection = new \ReflectionClass($rootClass);
+        if(!$reflection->implementsInterface(NodeInterface::class))
+            throw new \InvalidArgumentException('the given factory class "'.$rootClass.'"must implement '.NodeInterface::class);
+
+        $this->rootClass = $rootClass;
+    }
+
+    /**
+     * @return string
+     */
+    public function getRootClass()
+    {
+        return $this->rootClass;
+    }
+
+    protected function getMeta()
+    {
+        return $this->manager->getClassMetadata($this->rootClass);
+    }
+
 }
