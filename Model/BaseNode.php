@@ -5,7 +5,18 @@ namespace MandarinMedien\MMCmfNodeBundle\Model;
 use Doctrine\Common\Collections\ArrayCollection;
 use MandarinMedien\MMCmfNodeBundle\Entity\NodeInterface;
 
+use Symfony\Component\Validator\Constraint;
+use MandarinMedien\MMCmfNodeBundle\Validator\Constraint\NoNodeRecursion;
+use Symfony\Component\Validator\Constraints as Assert;
 
+
+/**
+ * Class BaseNode
+ *
+ * @NoNodeRecursion()
+ *
+ * @package MandarinMedien\MMCmfNodeBundle\Model
+ */
 class BaseNode implements NodeInterface
 {
     /**
@@ -15,6 +26,7 @@ class BaseNode implements NodeInterface
 
     /**
      * @var string
+     * @Assert\NotBlank(message="please provide a name for this node")
      */
     protected $name;
 
@@ -33,12 +45,14 @@ class BaseNode implements NodeInterface
 
     /**
      * @var int
+     * @Assert\Type(type="integer", message="please provide a numeric value")
      */
     protected $position = 0;
 
 
     /**
      * @var bool
+     * @Assert\Type(type="bool")
      */
     protected $visible = false;
 

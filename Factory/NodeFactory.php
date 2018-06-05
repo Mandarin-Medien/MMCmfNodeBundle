@@ -165,6 +165,15 @@ class NodeFactory
 
 
     /**
+     * get the complete definition of children
+     */
+    public function getChildNodeDefinitions()
+    {
+        return $this->childDefintions;
+    }
+
+
+    /**
      * @param string $rootClass
      * @throws \ReflectionException|\InvalidArgumentException
      */
