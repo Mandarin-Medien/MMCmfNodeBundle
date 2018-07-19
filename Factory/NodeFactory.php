@@ -74,14 +74,13 @@ class NodeFactory
         // prefilter discriminators by subclasses
         $subclasses = $this->getMeta()->subClasses;
 
-        $discriminators = array_filter(
+        $discriminators = ([$this->getMeta()->discriminatorValue => $this->getRootClass()] + array_filter(
             $this->getMeta()->discriminatorMap,
             function($class) use ($subclasses)
             {
                 return in_array($class, $subclasses);
             }
-        );
-
+        ));
 
         // filter discriminators by exlude array
         return array_diff(array_keys($discriminators), $exclude);
@@ -177,7 +176,7 @@ class NodeFactory
      * @param string $rootClass
      * @throws \ReflectionException|\InvalidArgumentException
      */
-    public function setRootClass(string $rootClass)
+    public function setRootClass($rootClass)
     {
         $reflection = new \ReflectionClass($rootClass);
         if(!$reflection->implementsInterface(NodeInterface::class))
