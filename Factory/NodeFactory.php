@@ -226,7 +226,7 @@ class NodeFactory
     /**
      * @return array
      */
-    public function getIcons(): array
+    public function getIcons()
     {
         return $this->icons;
     }
