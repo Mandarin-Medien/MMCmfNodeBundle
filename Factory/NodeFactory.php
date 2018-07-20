@@ -11,6 +11,7 @@ use MandarinMedien\MMCmfNodeBundle\Exception\InvalidArgumentException;
 class NodeFactory
 {
 
+
     /**
      * @var EntityManagerInterface
      */
@@ -21,10 +22,24 @@ class NodeFactory
      */
     private $rootClass;
 
+
+    /**
+     * @var string
+     */
+    private $defaultIcon;
+
+
     /**
      * @var \Doctrine\ORM\Mapping\ClassMetadata
      */
     private $meta;
+
+
+    /**
+     * @var array stroes individual icons per class
+     */
+    protected $icons;
+
 
     /**
      * @var array
@@ -39,6 +54,7 @@ class NodeFactory
     public function __construct(EntityManagerInterface $manager)
     {
         $this->childDefintions = [];
+        $this->icons = [];
         $this->manager = $manager;
     }
 
@@ -54,8 +70,7 @@ class NodeFactory
         $reflection = new \ReflectionClass($this->getClassByDiscriminator($discriminator));
 
         $instance = $reflection->newInstance();
-        if($instance instanceof NodeInterface)
-        {
+        if ($instance instanceof NodeInterface) {
             return $instance;
         }
 
@@ -75,12 +90,11 @@ class NodeFactory
         $subclasses = $this->getMeta()->subClasses;
 
         $discriminators = ([$this->getMeta()->discriminatorValue => $this->getRootClass()] + array_filter(
-            $this->getMeta()->discriminatorMap,
-            function($class) use ($subclasses)
-            {
-                return in_array($class, $subclasses);
-            }
-        ));
+                $this->getMeta()->discriminatorMap,
+                function ($class) use ($subclasses) {
+                    return in_array($class, $subclasses);
+                }
+            ));
 
         // filter discriminators by exlude array
         return array_diff(array_keys($discriminators), $exclude);
@@ -134,22 +148,21 @@ class NodeFactory
     {
 
         $reflectionParent = new \ReflectionClass($parent);
-        if(!$reflectionParent->implementsInterface(NodeInterface::class)) {
-            throw new \InvalidArgumentException('Parent Node must implement '.NodeInterface::class);
+        if (!$reflectionParent->implementsInterface(NodeInterface::class)) {
+            throw new \InvalidArgumentException('Parent Node must implement ' . NodeInterface::class);
         }
 
         $reflectionParent = new \ReflectionClass($child);
-        if(!$reflectionParent->implementsInterface(NodeInterface::class)) {
-            throw new \InvalidArgumentException('Child Node must implement '.NodeInterface::class);
+        if (!$reflectionParent->implementsInterface(NodeInterface::class)) {
+            throw new \InvalidArgumentException('Child Node must implement ' . NodeInterface::class);
         }
 
 
-        if(!isset($this->childDefintions[$parent])) $this->childDefintions[$parent] = [];
-        if(!in_array($child, $this->childDefintions[$parent])) $this->childDefintions[$parent][] = $child;
+        if (!isset($this->childDefintions[$parent])) $this->childDefintions[$parent] = [];
+        if (!in_array($child, $this->childDefintions[$parent])) $this->childDefintions[$parent][] = $child;
 
         return $this;
     }
-
 
 
     /**
@@ -179,8 +192,8 @@ class NodeFactory
     public function setRootClass($rootClass)
     {
         $reflection = new \ReflectionClass($rootClass);
-        if(!$reflection->implementsInterface(NodeInterface::class))
-            throw new \InvalidArgumentException('the given factory class "'.$rootClass.'"must implement '.NodeInterface::class);
+        if (!$reflection->implementsInterface(NodeInterface::class))
+            throw new \InvalidArgumentException('the given factory class "' . $rootClass . '"must implement ' . NodeInterface::class);
 
         $this->rootClass = $rootClass;
     }
@@ -196,6 +209,41 @@ class NodeFactory
     protected function getMeta()
     {
         return $this->manager->getClassMetadata($this->rootClass);
+    }
+
+
+    /**
+     * @param $class
+     * @param $icon
+     * @return $this
+     */
+    public function addIcon($class, $icon)
+    {
+        $this->icons[$class] = $icon;
+        return $this;
+    }
+
+    /**
+     * @return array
+     */
+    public function getIcons(): array
+    {
+        return $this->icons;
+    }
+
+
+    /**
+     * @param string $defaultIcon
+     */
+    public function setDefaultIcon($defaultIcon)
+    {
+        $this->defaultIcon = $defaultIcon;
+    }
+
+    public function getIcon($class)
+    {
+        return isset($this->icons[$class]) ? $this->icons[$class] : $this->defaultIcon;
+
     }
 
 }

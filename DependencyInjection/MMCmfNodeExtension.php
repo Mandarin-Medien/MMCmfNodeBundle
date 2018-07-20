@@ -31,14 +31,22 @@ class MMCmfNodeExtension extends Extension
 
         if($config['nodes']) {
 
-            $nodeFactory->addMethodCall("setRootClass", [$config['class']]);
+            $nodeFactory
+                ->addMethodCall("setDefaultIcon", [$config['defaultIcon']])
+                ->addMethodCall("setRootClass", [$config['class']]);
 
-            foreach($config['nodes'] as $parentClass => $subConfig) {
+            foreach($config['nodes'] as $class => $subConfig) {
+
+                if($subConfig['icon']) {
+                    $nodeFactory->addMethodCall("addIcon", array(
+                        $class, $subConfig['icon']
+                    ));
+                }
 
                 if($subConfig['children']) {
                     foreach ($subConfig['children'] as $childClass) {
                         $nodeFactory->addMethodCall("addChildNodeDefinition", array(
-                            $parentClass,
+                            $class,
                             $childClass
                         ));
                     }

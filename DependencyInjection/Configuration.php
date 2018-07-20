@@ -23,10 +23,12 @@ class Configuration implements ConfigurationInterface
 
         $rootNode
             ->children()
+                ->scalarNode('defaultIcon')->defaultValue('fa-file-o')->end()
                 ->scalarNode('class')->defaultValue(Node::class)->end()
                 ->arrayNode('nodes')
                      ->prototype('array')
                         ->children()
+                            ->scalarNode('icon')->defaultValue('fa-file-o')->end()
                             ->arrayNode('children')
                                 ->prototype('scalar')->end()
                             ->end()
