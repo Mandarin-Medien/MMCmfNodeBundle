@@ -130,11 +130,15 @@ class NodeFactory
      */
     public function getClassByDiscriminator($discriminator)
     {
-        if ($class = ($this->getMeta()->discriminatorMap[$discriminator])) {
-            return $class;
-        } else {
-            throw new \Exception('class not found');
-        }
+        static $classes;
+
+        if (empty($classes[$discriminator]))
+            if ($className = ($this->getMeta()->discriminatorMap[$discriminator]))
+                $classes[$discriminator] = $className;
+            else
+                throw new \Exception('class not found');
+
+        return $classes[$discriminator];
     }
 
 
@@ -208,7 +212,12 @@ class NodeFactory
 
     protected function getMeta()
     {
-        return $this->manager->getClassMetadata($this->rootClass);
+        static $metaData;
+
+        if (!$metaData)
+            $metaData = $this->manager->getClassMetadata($this->rootClass);
+
+        return $metaData;
     }
 
 
