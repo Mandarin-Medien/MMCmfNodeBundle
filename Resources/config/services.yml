@@ -26,7 +26,7 @@ services:
 
     MandarinMedien\MMCmfNodeBundle\Request\NodeRouteParamConverter:
         tags:
-            - {name: request.param_converter, priority: 1, converter: MandarinMedien\MMCmfRoutingBundle\Request\NodeRouteParamConverter }
+            - {name: request.param_converter, priority: 1, converter: MandarinMedien\MMCmfNodeBundle\Request\NodeRouteParamConverter }
 
     MandarinMedien\MMCmfNodeBundle\Twig\MMCmfNodeRenderExtension:
         tags:

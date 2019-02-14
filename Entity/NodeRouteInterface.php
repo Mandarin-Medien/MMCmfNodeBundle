@@ -7,7 +7,7 @@ use MandarinMedien\MMCmfNodeBundle\Entity\Node;
 
 /**
  * Interface NodeRouteInterface
- * @package MandarinMedien\MMCmfRoutingBundle\Entity
+ * @package MandarinMedien\MMCmfNodeBundle\Entity
  */
 interface NodeRouteInterface
 {

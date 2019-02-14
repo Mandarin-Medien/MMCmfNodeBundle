@@ -15,7 +15,7 @@ use utilphp\util;
  *
  * Handles the generating, persisting and updating of NodeRoutes
  *
- * @package MandarinMedien\MMCmfRoutingBundle\Entity
+ * @package MandarinMedien\MMCmfNodeBundle\Entity
  */
 class NodeRouteManager
 {

@@ -1,9 +1,8 @@
 <?php
 
 namespace MandarinMedien\MMCmfNodeBundle\Entity;
-use MandarinMedien\MMCmfNodeBundle\Entity\Node;
 use Symfony\Component\Validator\Constraints as Assert;
-use MandarinMedien\MMCmfRoutingBundle\Validator\Constraints as RoutingAssert;
+use MandarinMedien\MMCmfNodeBundle\Validator\Constraint as RoutingAssert;
 
 /**
  * NodeRoute

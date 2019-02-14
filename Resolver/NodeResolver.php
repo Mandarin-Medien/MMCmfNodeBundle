@@ -14,7 +14,7 @@ use MandarinMedien\MMCmfNodeBundle\Entity\RoutableNodeInterface;
  *
  * This class loads RoutableNodeInterfaces by a given NodeRouteInterface
  *
- * @package MandarinMedien\MMCmfRoutingBundle\Routing
+ * @package MandarinMedien\MMCmfNodeBundle\Resolver
  */
 class NodeResolver
 {

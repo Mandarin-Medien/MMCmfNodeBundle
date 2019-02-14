@@ -8,7 +8,7 @@ use MandarinMedien\MMCmfNodeBundle\Entity\NodeRouteInterface;
 
 /**
  * Class NodeRouteFactory
- * @package MandarinMedien\MMCmfRoutingBundle\Entity
+ * @package MandarinMedien\MMCmfNodeBundle\Entity
  */
 class NodeRouteFactory
 {
