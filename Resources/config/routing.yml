@@ -1,3 +1,7 @@
-mm_cmf_page_homepage:
-    path:     /
-    defaults: { _controller: MMCmfNodeBundle:Default:index }
+mm_cmf_node:
+    path:     /{route}
+    controller: MandarinMedien\MMCmfNodeBundle\Controller\NodeController::nodeRouteAction
+    defaults:
+        route: '/'
+    requirements:
+        route: .+

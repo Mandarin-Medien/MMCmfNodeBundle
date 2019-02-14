@@ -1,10 +1,61 @@
 services:
 
-    mm_cmf_node.node_converter:
-        class: MandarinMedien\MMCmfNodeBundle\Request\NodeParamConverter
-        arguments: ["@mm_cmf_node.factory", "@doctrine.orm.entity_manager"]
+    _defaults:
+        autowire: true
+        autoconfigure: true
+        public: false
+
+    MandarinMedien\MMCmfNodeBundle\Factory\NodeFactory:
+        public: true
+
+    MandarinMedien\MMCmfNodeBundle\Factory\NodeRouteFactory:
+        pubic: true
+
+    MandarinMedien\MMCmfNodeBundle\Manager\NodeRouteManager:
+        public: true
+
+    MandarinMedien\MMCmfNodeBundle\Resolver\NodeResolver:
+        public: true
+
+    MandarinMedien\MMCmfNodeBundle\Templating\TemplateManager:
+        public: true
+
+    MandarinMedien\MMCmfNodeBundle\Request\NodeParamConverter:
         tags:
             - {name: request.param_converter, priority: 1, converter: mm_cmf_node.node_converter }
+
+    MandarinMedien\MMCmfNodeBundle\Request\NodeRouteParamConverter:
+        tags:
+            - {name: request.param_converter, priority: 1, converter: MandarinMedien\MMCmfRoutingBundle\Request\NodeRouteParamConverter }
+
+    MandarinMedien\MMCmfNodeBundle\Twig\MMCmfNodeRenderExtension:
+        tags:
+            - {name: twig.extension}
+
+    mm_cmf_routing.node_route_factory:
+        alias: MandarinMedien\MMCmfNodeBundle\Factory\NodeRouteFactory
+        public: true
+        deprecated: true
+
+    mm_cmf_routing.node_route_manager:
+        alias: MandarinMedien\MMCmfNodeBundle\Manager\NodeRouteManager
+        public: true
+        deprecated: true
+
+    mm_cmf_node.factory:
+        alias: MandarinMedien\MMCmfNodeBundle\Factory\NodeFactory
+        public: true
+        deprecated: true
+
+    mm_cmf_routing.node_resolver:
+        alias: MandarinMedien\MMCmfNodeBundle\Resolver\NodeResolver
+        public: true
+        deprecated: true
+
+    mm_cmf_content.template_manager:
+        alias: MandarinMedien\MMCmfNodeBundle\Templating\TemplateManager
+        public: true
+        deprectaed: true
 
     mm_cmf_node.gedmo.sortable:
         class: Gedmo\Sortable\SortableListener
@@ -13,27 +64,25 @@ services:
         calls:
             - ['setAnnotationReader', ['@annotation_reader']]
 
-    mm_cmf_node.factory:
-        class: MandarinMedien\MMCmfNodeBundle\Factory\NodeFactory
-        arguments: ["@doctrine.orm.entity_manager"]
-
-    # Validation Constraints
-    mm_cmf_node.validator.no_node_recursion:
-        class: MandarinMedien\MMCmfNodeBundle\Validator\NoNodeRecursionValidator
-        calls:
-            - ["setManager", ["@doctrine.orm.entity_manager"]]
-        tags:
-            - { name: validator.constraint_validator, alias: "no_node_recursion" }
-
-
     # configure the visibilty filter on request
-    mm_cmf_node.doctrine_filter.config:
-        class: MandarinMedien\MMCmfNodeBundle\Doctrine\Filter\VisibilityFilterConfigurator
-        arguments:
-            - "@doctrine.orm.entity_manager"
-            - "@security.token_storage"
-        calls:
-            - ['setRoles', [["ROLE_ADMIN", "ROLE_USER"]]]
 
+    MandarinMedien\MMCmfNodeBundle\Doctrine\Filter\VisibilityFilterConfigurator:
+        calls:
+            - {method: setRoles, arguments: [["ROLE_ADMIN", "ROLE_USER"]]}
         tags:
             - { name: kernel.event_listener, event: kernel.request }
+
+
+    # Validation Constraints
+    MandarinMedien\MMCmfNodeBundle\Validator\Constraint\NodeRouteUniqueValidator:
+        tags:
+            - { name: validator.constraint_validator, alias: "node_route_unique" }
+
+
+    # Doctrine Event Listener
+    MandarinMedien\MMCmfNodeBundle\EventListener\NodeRouteListener:
+        tags:
+            - {name: doctrine.event_listener, event: prePersist}
+            - {name: doctrine.event_listener, event: onFlush}
+            - {name: doctrine.event_listener, event: postFlush}
+

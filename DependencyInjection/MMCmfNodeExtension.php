@@ -2,6 +2,7 @@
 
 namespace MandarinMedien\MMCmfNodeBundle\DependencyInjection;
 
+use MandarinMedien\MMCmfNodeBundle\Factory\NodeFactory;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\HttpKernel\DependencyInjection\Extension;
@@ -27,7 +28,7 @@ class MMCmfNodeExtension extends Extension
 
 
         // process
-        $nodeFactory = $container->getDefinition('mm_cmf_node.factory');
+        $nodeFactory = $container->getDefinition(NodeFactory::class);
 
         if($config['nodes']) {
 

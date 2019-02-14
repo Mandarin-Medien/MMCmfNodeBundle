@@ -1,0 +1,4 @@
+MandarinMedien\MMCmfNodeBundle\Entity\AutoNodeRoute:
+    type: entity
+    table: null
+    lifecycleCallbacks: {  }

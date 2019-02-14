@@ -1,6 +1,6 @@
 <?php
 
-namespace MandarinMedien\MMCmfNodeBundle\Validator;
+namespace MandarinMedien\MMCmfNodeBundle\Validator\Constraint;
 
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
