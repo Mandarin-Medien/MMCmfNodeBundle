@@ -9,7 +9,7 @@ services:
         public: true
 
     MandarinMedien\MMCmfNodeBundle\Factory\NodeRouteFactory:
-        pubic: true
+        public: true
 
     MandarinMedien\MMCmfNodeBundle\Manager\NodeRouteManager:
         public: true

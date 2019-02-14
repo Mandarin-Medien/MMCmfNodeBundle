@@ -3,6 +3,7 @@
 namespace MandarinMedien\MMCmfNodeBundle\Factory;
 
 use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityManagerInterface;
 use MandarinMedien\MMCmfNodeBundle\Entity\NodeRoute;
 use MandarinMedien\MMCmfNodeBundle\Entity\NodeRouteInterface;
 
@@ -20,9 +21,9 @@ class NodeRouteFactory
 
     /**
      * NodeRouteFactory constructor.
-     * @param EntityManager $manager
+     * @param EntityManagerInterface $manager
      */
-    public function __construct(EntityManager $manager)
+    public function __construct(EntityManagerInterface $manager)
     {
         $this->manager = $manager;
         $this->meta = $this->manager->getClassMetadata(
