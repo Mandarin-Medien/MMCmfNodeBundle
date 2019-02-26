@@ -27,6 +27,18 @@ class NodeRoute implements NodeRouteInterface
 
 
     /**
+     * @var array
+     */
+    protected $domains;
+
+
+    public function __construct()
+    {
+        $this->domains = [];
+    }
+
+
+    /**
      * Get id
      *
      * @return integer
@@ -58,6 +70,30 @@ class NodeRoute implements NodeRouteInterface
     public function getRoute()
     {
         return $this->route;
+    }
+
+    public function addDomain(string $domain)
+    {
+        if(!in_array($domain, $this->domains))
+            $this->domains[] = $domain;
+
+        return $this;
+
+    }
+
+    public function getDomains()
+    {
+        return $this->domains;
+    }
+
+    public function removeDomain(string $domain)
+    {
+        if(false !== ($index = array_search($domain, $this->domains))) {
+            unset($this->domains[$index]);
+            $this->domains = array_values($this->domains);
+        }
+
+        return $this;
     }
 
 

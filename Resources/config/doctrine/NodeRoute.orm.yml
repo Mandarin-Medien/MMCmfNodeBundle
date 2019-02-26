@@ -21,4 +21,8 @@ MandarinMedien\MMCmfNodeBundle\Entity\NodeRoute:
             length: 255
             unique: true
 
+        domains:
+            type: array
+            nullable: true
+
     lifecycleCallbacks: {  }
