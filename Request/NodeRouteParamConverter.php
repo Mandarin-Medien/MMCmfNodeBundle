@@ -15,6 +15,7 @@ class NodeRouteParamConverter implements ParamConverterInterface
 
     private $manager;
     private $repositoryClass = NodeRoute::class;
+    private $routeParamName = 'route';
 
     public function __construct(EntityManagerInterface $manager)
     {
@@ -26,6 +27,9 @@ class NodeRouteParamConverter implements ParamConverterInterface
      */
     function apply(Request $request, ParamConverter $configuration)
     {
+        if($request->get('_route') !== "mm_cmf_node")
+            return false;
+
         $domain = null;
         if ($request)
             $domain = $request->getHost();
@@ -40,7 +44,7 @@ class NodeRouteParamConverter implements ParamConverterInterface
             return true;
         }
 
-        throw new NotFoundHttpException('Route '.$routeUri.' not found.');
+        throw new NotFoundHttpException('Route ' . $routeUri . ' not found.');
     }
 
     function getNodeRoute($uri, $domain = "*")
