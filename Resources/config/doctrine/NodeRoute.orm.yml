@@ -22,7 +22,7 @@ MandarinMedien\MMCmfNodeBundle\Entity\NodeRoute:
             unique: true
 
         domains:
-            type: array
+            type: json_array
             nullable: true
 
     lifecycleCallbacks: {  }

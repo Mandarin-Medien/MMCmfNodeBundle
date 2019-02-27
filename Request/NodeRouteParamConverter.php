@@ -8,6 +8,7 @@ use MandarinMedien\MMCmfNodeBundle\Entity\NodeRoute;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Request\ParamConverter\ParamConverterInterface;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class NodeRouteParamConverter implements ParamConverterInterface
 {
@@ -25,18 +26,13 @@ class NodeRouteParamConverter implements ParamConverterInterface
      */
     function apply(Request $request, ParamConverter $configuration)
     {
+        $domain = null;
+        if ($request)
+            $domain = $request->getHost();
 
-        $route = $request->attributes->get('route');
+        $routeUri = $request->attributes->get('route');
 
-        if($route !== null && !is_null(
-            $route = $this->manager
-                ->getRepository($this->repositoryClass)
-                ->findOneBy(
-                    array(
-                        'route' => '/'.$route
-                    )
-                )
-        )) {
+        if ($domain !== null && $routeUri !== null && !is_null($route = $this->getNodeRoute($routeUri, $domain))) {
 
             $request->attributes->add(
                 array($configuration->getName() => $route)
@@ -44,7 +40,35 @@ class NodeRouteParamConverter implements ParamConverterInterface
             return true;
         }
 
-        return false;
+        throw new NotFoundHttpException('Route '.$routeUri.' not found.');
+    }
+
+    function getNodeRoute($uri, $domain = "*")
+    {
+        $routeUri = (strpos($uri, '/') === 0) ? $uri : '/' . $uri;
+
+        $qb = $this->manager
+            ->createQueryBuilder()
+            ->select('nr')
+            ->from($this->repositoryClass, 'nr')
+            ->where('nr.route = :route')
+            ->setParameter(':route', $routeUri);
+
+        if ($domain) {
+
+            $qb->andWhere(' (
+                nr.domains IS NULL
+                OR
+                nr.domains LIKE :domain
+                OR
+                nr.domains LIKE \'%"*"%\'
+          )  ')
+                ->setParameter(':domain', '%"' . $domain . '"%');
+        }
+
+        $node = $qb->getQuery()->getResult();
+
+        return count($node) ? $node[0] : null;
     }
 
     /**
