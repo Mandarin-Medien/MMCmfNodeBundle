@@ -68,7 +68,7 @@ class NodeDefinition
 
 
     /**
-     * @return array
+     * @return TemplateDefinition[]
      */
     public function getTemplates(): ?array
     {
@@ -76,7 +76,7 @@ class NodeDefinition
     }
 
     /**
-     * @param mixed $templates
+     * @param TemplateDefinition[] $templates
      * @return NodeDefinition
      */
     public function setTemplates(?array $templates) :NodeDefinition

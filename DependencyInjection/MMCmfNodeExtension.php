@@ -5,6 +5,7 @@ namespace MandarinMedien\MMCmfNodeBundle\DependencyInjection;
 use AppBundle\Entity\Page;
 use MandarinMedien\MMCmfNodeBundle\Configuration\NodeDefinition;
 use MandarinMedien\MMCmfNodeBundle\Configuration\NodeRegistry;
+use MandarinMedien\MMCmfNodeBundle\Configuration\TemplateDefinition;
 use MandarinMedien\MMCmfNodeBundle\Factory\NodeFactory;
 use MandarinMedien\MMCmfNodeBundle\Resolver\NodeDefinitionResolver;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -50,7 +51,13 @@ class MMCmfNodeExtension extends Extension
                 ->addMethodCall('setKey', [$nodeDefinition['key']])
                 ->addMethodCall('setClassName', [$nodeDefinition['className']])
                 ->addMethodCall('setChildren', [$nodeDefinition['children']])
-                ->addMethodCall('setTemplates', [$nodeDefinition['templates']])
+                ->addMethodCall('setTemplates', [array_map(function($template) {
+                    return (new Definition())
+                        ->setClass(TemplateDefinition::class)
+                        ->addMethodCall('setName', [$template['name']])
+                        ->addMethodCall('setPath', [$template['path']])
+                        ->addMethodCall('setNodes', [$template['nodes']]);
+                }, $nodeDefinition['templates'])])
         ]);
     }
 
