@@ -3,7 +3,10 @@
 namespace MandarinMedien\MMCmfNodeBundle\Templating;
 
 use Doctrine\ORM\EntityManagerInterface;
+use MandarinMedien\MMCmfNodeBundle\Entity\Node;
+use MandarinMedien\MMCmfNodeBundle\Entity\NodeInterface;
 use MandarinMedien\MMCmfNodeBundle\Entity\TemplatableNodeInterface;
+use MandarinMedien\MMCmfNodeBundle\Resolver\NodeDefinitionResolver;
 use Symfony\Component\HttpKernel\KernelInterface;
 
 /**
@@ -33,15 +36,21 @@ class TemplateManager
 
 
     /**
+     * @var NodeDefinitionResolver
+     */
+    protected $nodeDefinitionResolver;
+
+    /**
      * TemplateManager constructor.
      * @param EntityManagerInterface $manager
      * @param KernelInterface $kernel
      */
-    public function __construct(EntityManagerInterface $manager, KernelInterface $kernel)
+    public function __construct(EntityManagerInterface $manager, KernelInterface $kernel, NodeDefinitionResolver $nodeDefinitionResolver)
     {
 
         $this->manager = $manager;
         $this->kernel = $kernel;
+        $this->nodeDefinitionResolver = $nodeDefinitionResolver;
         $this->templates = array();
     }
 
@@ -64,16 +73,17 @@ class TemplateManager
     /**
      * get a list of all templates assigned to the given class
      *
-     * @param string $class
+     * @param NodeInterface $node
      * @return mixed
      */
-    public function getTemplates($class)
+    public function getTemplates(NodeInterface $node)
     {
-        if (isset($this->templates[$class])) {
-            return $this->templates[$class];
-        } else {
-            return array();
+        if($definition = $this->nodeDefinitionResolver->resolve($node))
+        {
+            return $definition->getTemplates();
         }
+
+        return null;
     }
 
 
@@ -83,6 +93,7 @@ class TemplateManager
      *
      * @param TemplatableNodeInterface $node
      * @return mixed|string
+     * @throws
      */
     public function getTemplate(TemplatableNodeInterface $node)
     {

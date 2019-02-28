@@ -5,10 +5,11 @@ namespace MandarinMedien\MMCmfNodeBundle\Twig;
 use MandarinMedien\MMCmfNodeBundle\Entity\NodeInterface;
 use MandarinMedien\MMCmfNodeBundle\Entity\ContentNodeInterface;
 use MandarinMedien\MMCmfNodeBundle\Entity\TemplatableNodeInterface;
+use MandarinMedien\MMCmfNodeBundle\Factory\NodeFactory;
 use MandarinMedien\MMCmfNodeBundle\Templating\TemplateManager;
 
 
-class MMCmfNodeRenderExtension extends \Twig_Extension
+class MMCmfNodeTwigExtension extends \Twig_Extension
 {
 
     /**
@@ -17,17 +18,24 @@ class MMCmfNodeRenderExtension extends \Twig_Extension
     protected $templateManager;
 
 
-    protected $manager;
+    /**
+     * @var NodeFactory
+     */
+    protected $nodeFactory;
 
 
-    protected $tokenStorage;
-
-
-    public function __construct(TemplateManager $templateManager)
+    public function __construct(NodeFactory $factory, TemplateManager $templateManager)
     {
         $this->templateManager = $templateManager;
+        $this->nodeFactory = $factory;
     }
 
+    public function getFilters()
+    {
+        return [
+            new \Twig_SimpleFilter('class_discriminator', [$this->nodeFactory, 'getDiscriminatorByClassName'])
+        ];
+    }
 
     public function getFunctions()
     {
