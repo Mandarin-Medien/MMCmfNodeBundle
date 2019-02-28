@@ -1,6 +1,7 @@
 <?php
 
 namespace MandarinMedien\MMCmfNodeBundle\Entity;
+
 use Symfony\Component\Validator\Constraints as Assert;
 use MandarinMedien\MMCmfNodeBundle\Validator\Constraint as RoutingAssert;
 
@@ -25,18 +26,15 @@ class NodeRoute implements NodeRouteInterface
      */
     protected $route;
 
-
     /**
      * @var array
      */
     protected $domains;
 
-
     public function __construct()
     {
         $this->domains = [];
     }
-
 
     /**
      * Get id
@@ -72,23 +70,34 @@ class NodeRoute implements NodeRouteInterface
         return $this->route;
     }
 
+    /**
+     * @param string $domain
+     * @return $this
+     */
     public function addDomain(string $domain)
     {
-        if(!in_array($domain, $this->domains))
+        if (!in_array($domain, $this->domains))
             $this->domains[] = $domain;
 
         return $this;
 
     }
 
+    /**
+     * @return array
+     */
     public function getDomains()
     {
         return $this->domains;
     }
 
+    /**
+     * @param string $domain
+     * @return $this
+     */
     public function removeDomain(string $domain)
     {
-        if(false !== ($index = array_search($domain, $this->domains))) {
+        if (false !== ($index = array_search($domain, $this->domains))) {
             unset($this->domains[$index]);
             $this->domains = array_values($this->domains);
         }
@@ -96,7 +105,9 @@ class NodeRoute implements NodeRouteInterface
         return $this;
     }
 
-
+    /**
+     * @return string
+     */
     public function __toString()
     {
         return $this->getRoute();

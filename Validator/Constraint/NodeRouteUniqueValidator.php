@@ -26,29 +26,41 @@ class NodeRouteUniqueValidator extends ConstraintValidator
     }
 
     /**
-     * @param mixed $nodeRoute
+     * @param NodeRoute $nodeRoute
      * @param Constraint $constraint
      */
     public function validate($nodeRoute, Constraint $constraint)
     {
-
         /**
          * @var NodeRoute $nodeRoute
          */
         $qb = $this->manager->createQueryBuilder()
             ->select('r')
             ->from($this->repositoryClass, 'r')
-            ->where("r.route = ?1")
-            ->andWhere('r.id != ?2')
-            ->setParameter('1', $nodeRoute->getRoute())
-            ->setParameter("2", $nodeRoute->getId())
-            ->setMaxResults(1);
+            ->where("r.route = :routeUri")
+            ->setParameter(':routeUri', $nodeRoute->getRoute());
 
-        $existing = $qb->getQuery()->execute();
+        if ($nodeRoute->getId()) {
+            $qb
+                ->andWhere('r.id != :id')
+                ->setParameter(':id', $nodeRoute->getId());
+        }
 
-        if(count($existing)>0) {
+        $nodeRoutes = $qb->getQuery()->getScalarResult();
+
+        if (count($nodeRoute->getDomains()) > 0)
+            $nodeRoutes = array_filter($nodeRoutes, function ($routeData) use ($nodeRoute) {
+
+                $domains = $routeData['r_domains'];
+                $match = array_intersect($nodeRoute->getDomains(), $domains);
+
+                return (bool)count($match);
+            });
+
+        if (count($nodeRoutes) > 0) {
             $this->context->buildViolation($constraint->message)
                 ->setParameter('%string%', $nodeRoute->getRoute())
+                ->setParameter('%routeId%', $nodeRoutes[0]['r_id'])
                 ->addViolation();
         }
     }

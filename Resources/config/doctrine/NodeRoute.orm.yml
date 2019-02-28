@@ -2,6 +2,9 @@ MandarinMedien\MMCmfNodeBundle\Entity\NodeRoute:
     type: entity
     table: null
     inheritanceType: SINGLE_TABLE
+    indexes:
+        uri_index:
+            columns: [ route ]
     discriminatorMap:
         default: NodeRoute
         auto: AutoNodeRoute
@@ -19,7 +22,6 @@ MandarinMedien\MMCmfNodeBundle\Entity\NodeRoute:
         route:
             type: string
             length: 255
-            unique: true
 
         domains:
             type: json_array

@@ -10,8 +10,7 @@ use Symfony\Component\Validator\Constraint;
  */
 class NodeRouteUnique extends Constraint
 {
-    public $message  = 'The route "%string%" is not unique.';
-
+    public $message  = '!The route "%string%" is not unique. Look at Route #%routeId%';
 
     public function validatedBy()
     {
@@ -22,5 +21,4 @@ class NodeRouteUnique extends Constraint
     {
         return self::CLASS_CONSTRAINT;
     }
-
 }
