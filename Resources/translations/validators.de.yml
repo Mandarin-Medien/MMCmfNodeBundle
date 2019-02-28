@@ -1,0 +1,2 @@
+'The route "%string%" is not unique. Look at Route ID "%routeId%"': >
+    Die URI "%string%" ist schon in Verwendung, schau dir die Route mit der ID <a href="%nodeRouteEditLink%" target="_blank">#%routeId%</a> an. | Zugehörige Domains: <b>%domains%</b>

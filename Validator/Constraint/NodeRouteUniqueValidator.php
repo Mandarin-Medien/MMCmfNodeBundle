@@ -5,6 +5,7 @@ namespace MandarinMedien\MMCmfNodeBundle\Validator\Constraint;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use MandarinMedien\MMCmfNodeBundle\Entity\NodeRoute;
+use Symfony\Component\Routing\RouterInterface;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;
 
@@ -19,10 +20,15 @@ class NodeRouteUniqueValidator extends ConstraintValidator
      * @var EntityManager
      */
     private $manager;
+    /**
+     * @var RouterInterface
+     */
+    private $router;
 
-    public function __construct(EntityManagerInterface $manager)
+    public function __construct(EntityManagerInterface $manager, RouterInterface $router)
     {
         $this->manager = $manager;
+        $this->router = $router;
     }
 
     /**
@@ -58,10 +64,17 @@ class NodeRouteUniqueValidator extends ConstraintValidator
             });
 
         if (count($nodeRoutes) > 0) {
-            $this->context->buildViolation($constraint->message)
-                ->setParameter('%string%', $nodeRoute->getRoute())
-                ->setParameter('%routeId%', $nodeRoutes[0]['r_id'])
-                ->addViolation();
+            foreach ($nodeRoutes as $route) {
+                $nodeRouteEditLink = $this->router->generate('mm_admin_content_extension_route_edit', ['id' => $route['r_id']]);
+
+                $this->context->buildViolation($constraint->message)
+                    ->atPath('route')
+                    ->setParameter('%nodeRouteEditLink%', $nodeRouteEditLink)
+                    ->setParameter('%string%', $nodeRoute->getRoute())
+                    ->setParameter('%domains%', implode(', ', $route['r_domains']))
+                    ->setParameter('%routeId%', $route['r_id'])
+                    ->addViolation();
+            }
         }
     }
 }
