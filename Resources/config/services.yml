@@ -37,31 +37,6 @@ services:
         tags:
             - {name: twig.extension}
 
-    mm_cmf_routing.node_route_factory:
-        alias: MandarinMedien\MMCmfNodeBundle\Factory\NodeRouteFactory
-        public: true
-        deprecated: true
-
-    mm_cmf_routing.node_route_manager:
-        alias: MandarinMedien\MMCmfNodeBundle\Manager\NodeRouteManager
-        public: true
-        deprecated: true
-
-    mm_cmf_node.factory:
-        alias: MandarinMedien\MMCmfNodeBundle\Factory\NodeFactory
-        public: true
-        deprecated: true
-
-    mm_cmf_routing.node_resolver:
-        alias: MandarinMedien\MMCmfNodeBundle\Resolver\NodeResolver
-        public: true
-        deprecated: true
-
-    mm_cmf_content.template_manager:
-        alias: MandarinMedien\MMCmfNodeBundle\Templating\TemplateManager
-        public: true
-        deprectaed: true
-
     mm_cmf_node.gedmo.sortable:
         class: Gedmo\Sortable\SortableListener
         tags:
