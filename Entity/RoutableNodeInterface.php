@@ -8,7 +8,10 @@ use MandarinMedien\MMCmfNodeBundle\Entity\NodeInterface;
 
 interface RoutableNodeInterface extends NodeInterface
 {
-
+    /**
+     * @param NodeRouteInterface $nodeRoute
+     * @return self
+     */
     public function addRoute(NodeRouteInterface $nodeRoute);
 
     /**
@@ -16,10 +19,21 @@ interface RoutableNodeInterface extends NodeInterface
      */
     public function getRoutes();
 
+    /**
+     * @param NodeRouteInterface $nodeRoute
+     * @return self
+     */
     public function removeRoute(NodeRouteInterface $nodeRoute);
 
+    /**
+     * @return boolean
+     */
     public function hasAutoNodeRouteGeneration();
 
+    /**
+     * @param boolean $autoNodeRouteGeneration
+     * @return self
+     */
     public function setAutoNodeRouteGeneration($autoNodeRouteGeneration);
 
 
