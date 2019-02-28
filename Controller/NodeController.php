@@ -2,6 +2,7 @@
 
 namespace MandarinMedien\MMCmfNodeBundle\Controller;
 
+use MandarinMedien\MMCmfNodeBundle\Entity\AliasNodeRoute;
 use MandarinMedien\MMCmfNodeBundle\Entity\AutoNodeRoute;
 use MandarinMedien\MMCmfNodeBundle\Entity\RedirectNodeRoute;
 use MandarinMedien\MMCmfNodeBundle\Resolver\NodeResolver;
@@ -72,11 +73,21 @@ class NodeController extends Controller
      */
     public function redirectAction(RedirectNodeRoute $nodeRoute)
     {
-
         $status = $nodeRoute->getStatusCode();
+
+        $nodeRouteResolver = $this->get(NodeResolver::class);
+        $node =  $nodeRouteResolver->resolve($nodeRoute);
 
         foreach($node->getRoutes() as $route) {
             if($route instanceof AutoNodeRoute) {
+                return $this->redirectToRoute("mm_cmf_node", array(
+                    'route' => trim($route->getRoute(), '/')
+                ), $status);
+            }
+        }
+
+        foreach($node->getRoutes() as $route) {
+            if($route instanceof AliasNodeRoute) {
                 return $this->redirectToRoute("mm_cmf_node", array(
                     'route' => trim($route->getRoute(), '/')
                 ), $status);
