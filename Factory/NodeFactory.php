@@ -3,9 +3,12 @@
 namespace MandarinMedien\MMCmfNodeBundle\Factory;
 
 use Doctrine\ORM\EntityManagerInterface;
+use MandarinMedien\MMCmfNodeBundle\Configuration\NodeRegistry;
 use MandarinMedien\MMCmfNodeBundle\Entity\Node;
 use MandarinMedien\MMCmfNodeBundle\Entity\NodeInterface;
 use MandarinMedien\MMCmfNodeBundle\Exception\InvalidArgumentException;
+use MandarinMedien\MMCmfNodeBundle\Resolver\NodeDefinitionResolver;
+use MandarinMedien\MMCmfNodeBundle\Resolver\NodeResolver;
 
 
 class NodeFactory
@@ -44,18 +47,25 @@ class NodeFactory
     /**
      * @var array
      */
-    protected $childDefintions;
+    protected $childDefinitions;
+
+
+    /**
+     * @var NodeRegistry
+     */
+    protected $registry;
 
 
     /**
      * ContentNodeFactory constructor.
      * @param EntityManagerInterface $manager
      */
-    public function __construct(EntityManagerInterface $manager)
+    public function __construct(EntityManagerInterface $manager, NodeDefinitionResolver $registry)
     {
         $this->childDefintions = [];
         $this->icons = [];
         $this->manager = $manager;
+        $this->registry = $registry;
     }
 
 

@@ -5,8 +5,10 @@ services:
         autoconfigure: true
         public: false
 
+    MandarinMedien\MMCmfNodeBundle\Configuration\NodeRegistry: ~
+
     MandarinMedien\MMCmfNodeBundle\Factory\NodeFactory:
-        public: true
+        public: true~
 
     MandarinMedien\MMCmfNodeBundle\Factory\NodeRouteFactory:
         public: true
@@ -15,6 +17,9 @@ services:
         public: true
 
     MandarinMedien\MMCmfNodeBundle\Resolver\NodeResolver:
+        public: true
+
+    MandarinMedien\MMCmfNodeBundle\Resolver\NodeDefinitionResolver:
         public: true
 
     MandarinMedien\MMCmfNodeBundle\Templating\TemplateManager:
@@ -28,7 +33,7 @@ services:
         tags:
             - {name: request.param_converter, priority: 1, converter: MandarinMedien\MMCmfNodeBundle\Request\NodeRouteParamConverter }
 
-    MandarinMedien\MMCmfNodeBundle\Twig\MMCmfNodeRenderExtension:
+    MandarinMedien\MMCmfNodeBundle\Twig\MMCmfNodeTwigExtension:
         tags:
             - {name: twig.extension}
 
