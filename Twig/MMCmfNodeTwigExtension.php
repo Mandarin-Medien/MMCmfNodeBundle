@@ -2,21 +2,17 @@
 
 namespace MandarinMedien\MMCmfNodeBundle\Twig;
 
+use Doctrine\ORM\EntityManagerInterface;
 use MandarinMedien\MMCmfNodeBundle\Entity\NodeInterface;
 use MandarinMedien\MMCmfNodeBundle\Entity\ContentNodeInterface;
 use MandarinMedien\MMCmfNodeBundle\Entity\TemplatableNodeInterface;
 use MandarinMedien\MMCmfNodeBundle\Factory\NodeFactory;
 use MandarinMedien\MMCmfNodeBundle\Templating\TemplateManager;
+use Symfony\Component\HttpKernel\KernelInterface;
 
 
 class MMCmfNodeTwigExtension extends \Twig_Extension
 {
-
-    /**
-     * @var TemplateManager
-     */
-    protected $templateManager;
-
 
     /**
      * @var NodeFactory
@@ -24,10 +20,22 @@ class MMCmfNodeTwigExtension extends \Twig_Extension
     protected $nodeFactory;
 
 
-    public function __construct(NodeFactory $factory, TemplateManager $templateManager)
+    /**
+     * @var TemplateManager
+     */
+    protected $templateManager;
+
+    /**
+     * @var KernelInterface
+     */
+    protected $kernel;
+
+
+    public function __construct(NodeFactory $factory, TemplateManager $manager, KernelInterface $kernel)
     {
-        $this->templateManager = $templateManager;
+        $this->templateManager = $manager;
         $this->nodeFactory = $factory;
+        $this->kernel = $kernel;
     }
 
     public function getFilters()
@@ -60,16 +68,9 @@ class MMCmfNodeTwigExtension extends \Twig_Extension
      */
     public function render(\Twig_Environment $twig, TemplatableNodeInterface $node, string $template = null, array $options = [])
     {
-
-        if(     $node instanceof NodeInterface
-            &&  $node instanceof ContentNodeInterface
-        ) {
-
-            $template = $template ?: $this->templateManager->getTemplate($node);
-
-            return $twig->render($template, ['node' => $node]);
-        }
-
-        return '';
+        $twig->render($template ?: $this->templateManager->getTemplate($node), [
+            'node' => $node
+        ]);
     }
+
 }

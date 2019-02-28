@@ -7,6 +7,9 @@ use MandarinMedien\MMCmfNodeBundle\Entity\Node;
 use MandarinMedien\MMCmfNodeBundle\Entity\NodeInterface;
 use MandarinMedien\MMCmfNodeBundle\Entity\TemplatableNodeInterface;
 use MandarinMedien\MMCmfNodeBundle\Resolver\NodeDefinitionResolver;
+use MandarinMedien\MMCmfNodeBundle\Resolver\NodeTemplateResolver;
+use MandarinMedien\MMCmfNodeBundle\Resolver\TemplateDefinitionResolver;
+use Symfony\Bundle\TwigBundle\TwigEngine;
 use Symfony\Component\HttpKernel\KernelInterface;
 
 /**
@@ -25,66 +28,22 @@ class TemplateManager
     protected $kernel;
 
     /**
-     * @var EntityManagerInterface
+     * @var \Twig_Environment
      */
-    protected $manager;
+    protected $twig;
 
-    /**
-     * @var array
-     */
-    protected $templates;
-
-
-    /**
-     * @var NodeDefinitionResolver
-     */
-    protected $nodeDefinitionResolver;
 
     /**
      * TemplateManager constructor.
-     * @param EntityManagerInterface $manager
+     * @param TwigEngine $twig
      * @param KernelInterface $kernel
      */
-    public function __construct(EntityManagerInterface $manager, KernelInterface $kernel, NodeDefinitionResolver $nodeDefinitionResolver)
+    public function __construct(TwigEngine $twig, KernelInterface $kernel)
     {
-
-        $this->manager = $manager;
         $this->kernel = $kernel;
-        $this->nodeDefinitionResolver = $nodeDefinitionResolver;
-        $this->templates = array();
+        $this->twig = $twig;
     }
 
-
-    /**
-     * register template
-     *
-     * @param string $class fully qualified class-name
-     * @param string $name name of the template
-     * @param string $template template path
-     * @return $this
-     */
-    public function registerTemplate($class, $name, $template)
-    {
-        $this->templates[$class][$name] = $template;
-        return $this;
-    }
-
-
-    /**
-     * get a list of all templates assigned to the given class
-     *
-     * @param NodeInterface $node
-     * @return mixed
-     */
-    public function getTemplates(NodeInterface $node)
-    {
-        if($definition = $this->nodeDefinitionResolver->resolve($node))
-        {
-            return $definition->getTemplates();
-        }
-
-        return null;
-    }
 
 
     /**
@@ -98,23 +57,10 @@ class TemplateManager
     public function getTemplate(TemplatableNodeInterface $node)
     {
 
-        $template = $node->getTemplate();
+        $template = $node->getTemplate()
+            ?: $this->getDefaultTemplate($node);
 
-        if (!$template) {
-
-            $meta = $this->manager->getClassMetadata(get_class($node));
-
-            if (!empty($this->templates[$meta->name]) && count($this->templates[$meta->name]) > 0)
-                $template = reset($this->templates[$meta->name]);
-
-            else {
-                $name = trim(str_replace($meta->namespace, '', $meta->name), '\\');
-                $bundleName = $this->getBundleNameFromEntity($meta->namespace, $this->kernel->getBundles());
-                $template = $this->getDefaultTemplate($name, $bundleName);
-            }
-        }
-
-        return $template;
+        return $this->resolveLocalTemplate($template, $node) ?? $template;
 
     }
 
@@ -126,14 +72,22 @@ class TemplateManager
      * @return int|string|null
      * @throws \ReflectionException
      */
-    protected static function getBundleNameFromEntity($entityNamespace, $bundles)
+    /**
+     * get the bundle name form entity namespace
+     *
+     * @param $entityNamespace
+     * @param $bundles
+     * @return int|string|null
+     * @throws \ReflectionException
+     */
+    protected function getBundlePrefixFromEntity($entityNamespace)
     {
         $dataBaseNamespace = substr($entityNamespace, 0, strpos($entityNamespace, '\\Entity'));
 
-        foreach ($bundles as $type => $bundle) {
+        foreach ($this->kernel->getBundles() as $type => $bundle) {
             $bundleRefClass = new \ReflectionClass($bundle);
             if ($bundleRefClass->getNamespaceName() === $dataBaseNamespace) {
-                return $type;
+                return '@'.preg_replace('/Bundle$/', '', $type);
             }
         }
 
@@ -146,10 +100,50 @@ class TemplateManager
      *
      * @param string $bundleName
      * @return string
+     * @throws
      */
-    public function getDefaultTemplate($className, $bundleName = "MMCmfNodeBundle")
+    public function getDefaultTemplate(NodeInterface $node)
     {
-        return $bundleName . ':cmf:' . $className . '/' . $className . '_default.html.twig';
+
+        $reflection = new \ReflectionClass(get_class($node));
+        $name = $reflection->getShortName();
+        $namespace = $reflection->getNamespaceName();
+        $bundlePrefix = $this->getBundlePrefixFromEntity($namespace);
+
+        return $bundlePrefix . '/cmf/' . $name . '/' . $name . '_default.html.twig';
     }
+
+
+    /**
+     * Search for Templates which are locally overwritten
+     *
+     * @param $path
+     * @param $node
+     * @return string|null
+     */
+    protected function resolveLocalTemplate($path, $node)
+    {
+        // check for local override
+        $idList = [$node->getId()];
+
+        while ($node = $node->getParent())
+            $idList[] = $node->getId();
+
+
+        $localTemplate = null;
+
+        foreach(array_reverse($idList) as $id) {
+
+            $localTemplateTmp = preg_replace('/^(@[a-zA-Z0-9_]+)/', "$1/" . $id, $path);
+            
+            $localTemplate = $this->twig->exists($localTemplateTmp)
+                ? $localTemplateTmp
+                : $localTemplate;
+        }
+
+        return $localTemplate;
+    }
+
+
 
 }
