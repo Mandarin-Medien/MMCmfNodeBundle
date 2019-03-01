@@ -93,7 +93,7 @@ class NodeRoute implements NodeRouteInterface
 
     /**
      * @param string $domain
-     * @return $this
+     * @return $this|NodeRouteInterface
      */
     public function removeDomain(string $domain)
     {

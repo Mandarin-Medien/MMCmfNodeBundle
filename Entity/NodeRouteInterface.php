@@ -22,5 +22,21 @@ interface NodeRouteInterface
      */
     public function getRoute();
 
+    /**
+     * @param string $domain
+     * @return $this
+     */
+    public function addDomain(string $domain);
+
+    /**
+     * @return array
+     */
+    public function getDomains();
+
+    /**
+     * @param string $domain
+     * @return $this
+     */
+    public function removeDomain(string $domain);
 }
 
