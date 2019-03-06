@@ -64,14 +64,7 @@ class TemplateManager
 
     }
 
-    /**
-     * get the bundle name form entity namespace
-     *
-     * @param $entityNamespace
-     * @param $bundles
-     * @return int|string|null
-     * @throws \ReflectionException
-     */
+
     /**
      * get the bundle name form entity namespace
      *
@@ -134,7 +127,6 @@ class TemplateManager
 
         foreach(array_reverse($idList) as $id) {
 
-
             if(preg_match('/^(@[a-zA-Z0-9_]+\/|[a-zA-Z0-9_]+:)(.+)/', $path, $matches))
             {
                 $bundle = $matches[1];
@@ -150,7 +142,4 @@ class TemplateManager
 
         return $localTemplate;
     }
-
-
-
 }

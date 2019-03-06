@@ -3,6 +3,8 @@
 namespace MandarinMedien\MMCmfNodeBundle\Factory;
 
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Query\ResultSetMapping;
+use MandarinMedien\MMCmfNodeBundle\Configuration\NodeDefinition;
 use MandarinMedien\MMCmfNodeBundle\Configuration\NodeRegistry;
 use MandarinMedien\MMCmfNodeBundle\Entity\Node;
 use MandarinMedien\MMCmfNodeBundle\Entity\NodeInterface;
@@ -33,12 +35,6 @@ class NodeFactory
 
 
     /**
-     * @var \Doctrine\ORM\Mapping\ClassMetadata
-     */
-    private $meta;
-
-
-    /**
      * @var array stroes individual icons per class
      */
     protected $icons;
@@ -51,21 +47,28 @@ class NodeFactory
 
 
     /**
-     * @var NodeRegistry
+     * @var NodeDefinitionResolver
      */
-    protected $registry;
+    protected $definitionResolver;
 
 
     /**
-     * ContentNodeFactory constructor.
-     * @param EntityManagerInterface $manager
+     * @var array
      */
-    public function __construct(EntityManagerInterface $manager, NodeDefinitionResolver $registry)
+    protected $classIndex;
+
+
+    /**
+     * NodeFactory constructor.
+     * @param EntityManagerInterface $manager
+     * @param NodeDefinitionResolver $definitionResolver
+     */
+    public function __construct(EntityManagerInterface $manager, NodeDefinitionResolver $definitionResolver)
     {
         $this->childDefintions = [];
         $this->icons = [];
         $this->manager = $manager;
-        $this->registry = $registry;
+        $this->definitionResolver = $definitionResolver;
     }
 
 
@@ -264,5 +267,163 @@ class NodeFactory
         return isset($this->icons[$class]) ? $this->icons[$class] : $this->defaultIcon;
 
     }
+
+    /**
+     * @Todo: find better way to handle the relation between dytpe and classNames
+     * @param NodeInterface|null $node
+     * @return array
+     * @throws
+     */
+    public function getTree(NodeInterface $node = null)
+    {
+        $nodes = $this->getNodes();
+
+
+        /**
+         * @Todo: Maybe do some caching here
+         */
+        $tree = $this->_buildTree($nodes);
+
+        return $tree;
+    }
+
+
+    /**
+     * build the node tree
+     *
+     * @param array $nodes
+     * @param null $parent
+     * @return array
+     * @throws
+     */
+    public function _buildTree(&$nodes, $parent = null, $parentKey = null)
+    {
+        $tree = [];
+
+        foreach($nodes as &$node) {
+
+            $className = $this->getClassByDiscriminator($node['dtype']);
+
+            // build the key for the node defintion
+            $definitionKey = $parentKey
+                ? ($parentKey.NodeDefinitionResolver::KEY_SEPARATOR.$className)
+                : $className;
+
+            /**
+             * @var NodeDefinition $definition
+             */
+            $definition = $this->definitionResolver->resolveByKey($definitionKey);
+
+            // add the class from dtype
+            $node['className'] = $className;
+
+            $node['definition'] = $definition;
+
+            // set the key for resolving icons and possible child classes
+            //$node['definitionKey'] = $definitionKey;
+
+            // add the icon
+            //$node['icon'] = $definition ? $definition->getIcon() : null;
+
+            // add the children
+            //$node['children'] = $definition['children'];
+
+            if($node['parent'] === $parent) {
+                $_node = $node;
+                unset($node);
+                $tree[] = array_merge($_node, ['children' => $this->_buildTree($nodes, $_node['id'], $definitionKey)]);
+            }
+
+        };
+
+
+        // sort by positions
+        usort($tree, function($a, $b) {
+
+            if($a['position'] < $b['position']) {
+                return -1;
+            } elseif($a['position'] > $b['position']) {
+                return 1;
+            } else {
+                return 0;
+            }
+        });
+
+        return $tree;
+
+    }
+
+
+    protected function getNodes()
+    {
+
+        static $nodes;
+
+        if(!$nodes) {
+            $rootNodeMeta = $this->manager->getClassMetadata($this->getRootClass());
+
+            $rsm = new ResultSetMapping();
+            $rsm
+                ->addScalarResult('id', 'id', 'integer')
+                ->addScalarResult('position', 'position', 'integer')
+                ->addScalarResult('visible', 'visible', 'boolean')
+                ->addScalarResult('name', 'name', 'string')
+                ->addScalarResult('parent_id', 'parent', 'integer')
+                ->addScalarResult('dtype', 'dtype', 'string');
+
+            $query = 'SELECT n.id, n.name, n.parent_id, n.position, n.visible, n.dtype FROM `' . $rootNodeMeta->getTableName() . '` as n';
+
+
+            $query = $this->manager->createNativeQuery($query, $rsm);
+            $nodes = $query->getScalarResult();
+        }
+
+        return $nodes;
+    }
+
+
+    /**
+     * @return NodeDefinitionResolver
+     */
+    public function getDefinitionResolver(): NodeDefinitionResolver
+    {
+        return $this->definitionResolver;
+    }
+
+
+    /**
+     * return a flatten list with all entities implementing NodeInterface
+     * @return array
+     */
+    public function getClassIndex()
+    {
+
+        if(is_null($this->classIndex)) {
+            $this->classIndex = [];
+            /**
+             * get a full list of all entities implementing NodeInterface
+             * for resolving dtypes
+             */
+            foreach ($this->getDiscriminators() as $dtype)
+                $classIndex[$this->getClassByDiscriminator($dtype)] = $dtype;
+        }
+
+        return $this->classIndex;
+    }
+
+
+    public function getNodeMeta($nodeInterfaceOrId)
+    {
+        $id = $nodeInterfaceOrId instanceof NodeInterface
+            ? $nodeInterfaceOrId->getId()
+            : $nodeInterfaceOrId;
+
+        $node = array_filter($this->getNodes(), function ($node) use ($id) {
+            return $id === $node['id'];
+        });
+        $node = reset($node);
+
+    }
+
 
 }
