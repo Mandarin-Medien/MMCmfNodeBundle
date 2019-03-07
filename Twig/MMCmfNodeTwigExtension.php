@@ -2,9 +2,6 @@
 
 namespace MandarinMedien\MMCmfNodeBundle\Twig;
 
-use Doctrine\ORM\EntityManagerInterface;
-use MandarinMedien\MMCmfNodeBundle\Entity\NodeInterface;
-use MandarinMedien\MMCmfNodeBundle\Entity\ContentNodeInterface;
 use MandarinMedien\MMCmfNodeBundle\Entity\TemplatableNodeInterface;
 use MandarinMedien\MMCmfNodeBundle\Factory\NodeFactory;
 use MandarinMedien\MMCmfNodeBundle\Templating\TemplateManager;

@@ -2,9 +2,7 @@
 
 namespace MandarinMedien\MMCmfNodeBundle\Request;
 
-use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
-use MandarinMedien\MMCmfNodeBundle\Entity\Node;
 use MandarinMedien\MMCmfNodeBundle\Entity\NodeInterface;
 use MandarinMedien\MMCmfNodeBundle\Factory\NodeFactory;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;

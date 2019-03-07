@@ -3,7 +3,6 @@
 namespace MandarinMedien\MMCmfNodeBundle\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
-use MandarinMedien\MMCmfNodeBundle\Entity\NodeInterface;
 
 
 interface RoutableNodeInterface extends NodeInterface

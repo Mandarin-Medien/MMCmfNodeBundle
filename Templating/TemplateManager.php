@@ -2,13 +2,9 @@
 
 namespace MandarinMedien\MMCmfNodeBundle\Templating;
 
-use Doctrine\ORM\EntityManagerInterface;
-use MandarinMedien\MMCmfNodeBundle\Entity\Node;
 use MandarinMedien\MMCmfNodeBundle\Entity\NodeInterface;
 use MandarinMedien\MMCmfNodeBundle\Entity\TemplatableNodeInterface;
-use MandarinMedien\MMCmfNodeBundle\Resolver\NodeDefinitionResolver;
 use MandarinMedien\MMCmfNodeBundle\Resolver\NodeTemplateResolver;
-use MandarinMedien\MMCmfNodeBundle\Resolver\TemplateDefinitionResolver;
 use Symfony\Bundle\TwigBundle\TwigEngine;
 use Symfony\Component\HttpKernel\KernelInterface;
 

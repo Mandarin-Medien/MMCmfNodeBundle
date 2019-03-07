@@ -8,7 +8,6 @@ use FOS\UserBundle\Model\UserInterface;
 use MandarinMedien\MMCmfNodeBundle\Entity\NodeInterface;
 
 
-
 class VisibilityFilter extends SQLFilter
 {
 

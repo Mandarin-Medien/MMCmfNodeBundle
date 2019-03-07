@@ -4,11 +4,11 @@ namespace MandarinMedien\MMCmfNodeBundle\EventListener;
 
 
 use Doctrine\ORM\Event\LifecycleEventArgs;
+use Doctrine\ORM\Event\OnFlushEventArgs;
 use Doctrine\ORM\Event\PostFlushEventArgs;
 use MandarinMedien\MMCmfNodeBundle\Entity\AutoNodeRoute;
-use Doctrine\ORM\Event\OnFlushEventArgs;
-use MandarinMedien\MMCmfNodeBundle\Manager\NodeRouteManager;
 use MandarinMedien\MMCmfNodeBundle\Entity\RoutableNodeInterface;
+use MandarinMedien\MMCmfNodeBundle\Manager\NodeRouteManager;
 use Psr\Container\ContainerInterface;
 
 

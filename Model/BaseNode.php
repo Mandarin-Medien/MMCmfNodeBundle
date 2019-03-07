@@ -4,8 +4,6 @@ namespace MandarinMedien\MMCmfNodeBundle\Model;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use MandarinMedien\MMCmfNodeBundle\Entity\NodeInterface;
-
-use Symfony\Component\Validator\Constraint;
 use MandarinMedien\MMCmfNodeBundle\Validator\Constraint\NoNodeRecursion;
 use Symfony\Component\Validator\Constraints as Assert;
 

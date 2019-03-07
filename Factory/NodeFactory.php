@@ -4,11 +4,8 @@ namespace MandarinMedien\MMCmfNodeBundle\Factory;
 
 use Doctrine\ORM\EntityManagerInterface;
 use MandarinMedien\MMCmfNodeBundle\Configuration\NodeRegistry;
-use MandarinMedien\MMCmfNodeBundle\Entity\Node;
 use MandarinMedien\MMCmfNodeBundle\Entity\NodeInterface;
-use MandarinMedien\MMCmfNodeBundle\Exception\InvalidArgumentException;
 use MandarinMedien\MMCmfNodeBundle\Resolver\NodeDefinitionResolver;
-use MandarinMedien\MMCmfNodeBundle\Resolver\NodeResolver;
 
 
 class NodeFactory
