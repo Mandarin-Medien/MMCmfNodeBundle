@@ -14,7 +14,7 @@ class TemplateDefinition
     /**
      * @var array
      */
-    protected $nodes = [];
+    protected $tags = [];
 
 
     /**
@@ -43,18 +43,18 @@ class TemplateDefinition
     /**
      * @return array
      */
-    public function getNodes(): ?array
+    public function getTags(): ?array
     {
-        return $this->nodes;
+        return $this->tags;
     }
 
     /**
      * @param array $nodes
      * @return TemplateDefinition
      */
-    public function setNodes(?array $nodes): TemplateDefinition
+    public function setTags(?array $tags): TemplateDefinition
     {
-        $this->nodes = $nodes;
+        $this->tags = $tags;
         return $this;
     }
 

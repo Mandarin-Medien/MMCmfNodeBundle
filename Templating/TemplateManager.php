@@ -6,9 +6,11 @@ use Doctrine\ORM\EntityManagerInterface;
 use MandarinMedien\MMCmfNodeBundle\Entity\Node;
 use MandarinMedien\MMCmfNodeBundle\Entity\NodeInterface;
 use MandarinMedien\MMCmfNodeBundle\Entity\TemplatableNodeInterface;
+use MandarinMedien\MMCmfNodeBundle\Factory\NodeFactory;
 use MandarinMedien\MMCmfNodeBundle\Resolver\NodeDefinitionResolver;
 use MandarinMedien\MMCmfNodeBundle\Resolver\NodeTemplateResolver;
 use MandarinMedien\MMCmfNodeBundle\Resolver\TemplateDefinitionResolver;
+use MandarinMedien\MMSearchBundle\Serializer\Factory;
 use Symfony\Bundle\TwigBundle\TwigEngine;
 use Symfony\Component\HttpKernel\KernelInterface;
 
@@ -21,6 +23,17 @@ use Symfony\Component\HttpKernel\KernelInterface;
  */
 class TemplateManager
 {
+
+    /**
+     * @var string Directory for local template overrides
+     */
+    protected $overrideDir;
+
+    /**
+     * @var Factory
+     */
+    protected $factory;
+
 
     /**
      * @var KernelInterface
@@ -38,10 +51,12 @@ class TemplateManager
      * @param TwigEngine $twig
      * @param KernelInterface $kernel
      */
-    public function __construct(TwigEngine $twig, KernelInterface $kernel)
+    public function __construct(NodeFactory $factory, TwigEngine $twig, KernelInterface $kernel, string $overrideDir)
     {
+        $this->factory = $factory;
         $this->kernel = $kernel;
         $this->twig = $twig;
+        $this->overrideDir = $overrideDir;
     }
 
 
@@ -110,36 +125,31 @@ class TemplateManager
     /**
      * Search for Templates which are locally overwritten
      *
-     * @param $path
+     * @param $templatePath
      * @param $node
      * @return string|null
      */
-    protected function resolveLocalTemplate($path, $node)
+    protected function resolveLocalTemplate($templatePath, $node)
     {
-        // check for local override
-        $idList = [$node->getId()];
+        $nodeMeta = $this->factory->getNodeMeta($node);
+        $tags = $nodeMeta['tags'];
 
-        while ($node = $node->getParent())
-            $idList[] = $node->getId();
+        foreach(array_reverse($tags) as $tag) {
 
-
-        $localTemplate = null;
-
-        foreach(array_reverse($idList) as $id) {
-
-            if(preg_match('/^(@[a-zA-Z0-9_]+\/|[a-zA-Z0-9_]+:)(.+)/', $path, $matches))
+            if(preg_match('/^(@[a-zA-Z0-9_]+\/|[a-zA-Z0-9_]+:)(.+)/', $templatePath, $matches))
             {
                 $bundle = $matches[1];
                 $path = $matches[2];
 
-                $localTemplateTmp = $bundle.$id.'/'.$path;
+                $localTemplateTmp = $bundle.$this->overrideDir.'/'.$tag.'/'.$path;
 
-                $localTemplate = $this->twig->exists($localTemplateTmp)
-                    ? $localTemplateTmp
-                    : $localTemplate;
+                if($this->twig->exists($localTemplateTmp)) {
+                    $templatePath = $localTemplateTmp;
+                    break;
+                }
             }
         }
 
-        return $localTemplate;
+        return $templatePath;
     }
 }

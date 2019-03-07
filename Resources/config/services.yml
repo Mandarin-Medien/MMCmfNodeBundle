@@ -7,8 +7,10 @@ services:
 
     MandarinMedien\MMCmfNodeBundle\Configuration\NodeRegistry: ~
 
+    MandarinMedien\MMCmfNodeBundle\Configuration\TagRegistry: ~
+
     MandarinMedien\MMCmfNodeBundle\Factory\NodeFactory:
-        public: true~
+        public: true
 
     MandarinMedien\MMCmfNodeBundle\Factory\NodeRouteFactory:
         public: true

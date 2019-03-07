@@ -2,6 +2,7 @@
 
 namespace MandarinMedien\MMCmfNodeBundle\Resolver;
 
+use MandarinMedien\MMCmfNodeBundle\Configuration\TagRegistry;
 use MandarinMedien\MMCmfNodeBundle\Configuration\TemplateDefinition;
 use MandarinMedien\MMCmfNodeBundle\Entity\NodeInterface;
 
@@ -22,12 +23,20 @@ class TemplateDefinitionResolver
 
 
     /**
+     * @var TagRegistry
+     */
+    protected $tagRegistry;
+
+
+    /**
      * TemplateDefinitionResolver constructor.
      * @param NodeDefinitionResolver $resolver
+     * @param TagRegistry $tagRegistry
      */
-    public function __construct(NodeDefinitionResolver $resolver)
+    public function __construct(NodeDefinitionResolver $resolver, TagRegistry $tagRegistry)
     {
         $this->nodeDefinitionResolver = $resolver;
+        $this->tagRegistry = $tagRegistry;
     }
 
 
@@ -39,8 +48,8 @@ class TemplateDefinitionResolver
     {
         if($definition = $this->nodeDefinitionResolver->resolve($node))
             return array_filter($definition->getTemplates(), function (TemplateDefinition $template) use ($node) {
-                return is_null($template->getNodes())
-                    || array_intersect($template->getNodes(), $this->getIdList($node));
+                return is_null($template->getTags())
+                    || array_intersect($template->getTags(), $this->getTags($node));
             });
 
         return [];
@@ -52,14 +61,18 @@ class TemplateDefinitionResolver
      * @param NodeInterface $node
      * @return array
      */
-    protected function getIdList(NodeInterface $node)
+    protected function getTags(NodeInterface $node)
     {
-        $ids = [$node->getId()];
+        $tags = [];
 
-        while ($node = $node->getParent())
-            $ids[] = $node->getId();
+        while ($node) {
+           if($this->tagRegistry->has($node->getId()))
+               $tags[] = $this->tagRegistry->get($node->getId());
 
-        return $ids;
+           $node = $node->getParent();
+        }
+
+        return $tags;
     }
 
 }

@@ -5,9 +5,11 @@ namespace MandarinMedien\MMCmfNodeBundle\DependencyInjection;
 use AppBundle\Entity\Page;
 use MandarinMedien\MMCmfNodeBundle\Configuration\NodeDefinition;
 use MandarinMedien\MMCmfNodeBundle\Configuration\NodeRegistry;
+use MandarinMedien\MMCmfNodeBundle\Configuration\TagRegistry;
 use MandarinMedien\MMCmfNodeBundle\Configuration\TemplateDefinition;
 use MandarinMedien\MMCmfNodeBundle\Factory\NodeFactory;
 use MandarinMedien\MMCmfNodeBundle\Resolver\NodeDefinitionResolver;
+use MandarinMedien\MMCmfNodeBundle\Templating\TemplateManager;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\Definition;
@@ -37,15 +39,24 @@ class MMCmfNodeExtension extends Extension
 
         // process
         $nodeFactory = $container->getDefinition(NodeFactory::class);
-        $registry = $container->getDefinition(NodeRegistry::class);
+        $nodeRegistry = $container->getDefinition(NodeRegistry::class);
+        $tagRegistry = $container->getDefinition(TagRegistry::class);
+        $templateManager = $container->getDefinition(TemplateManager::class);
+        $templateManager->setArgument('$overrideDir', $config['templating']['override_dir']);
+
 
         $nodeFactory
             ->addMethodCall("setDefaultIcon", [$config['defaultIcon']])
             ->addMethodCall("setRootClass", [$config['class']]);
 
-        // build teh node hierarchy configuration
+
+        foreach ($config['tags'] as $tag => $id)
+            $tagRegistry->addMethodCall('add', [$id, $tag]);
+
+
+        // build the node hierarchy configuration
         foreach ($nodeDefinitions = $this->buildNodeDefinitions($config['nodes'], $config['defaultIcon']) as $key => $nodeDefinition)
-            $registry->addMethodCall('add', [$key, (new Definition())
+            $nodeRegistry->addMethodCall('add', [$key, (new Definition())
                 ->setClass(NodeDefinition::class)
                 ->addMethodCall('setIcon', [$nodeDefinition['icon']])
                 ->addMethodCall('setKey', [$nodeDefinition['key']])
@@ -56,7 +67,7 @@ class MMCmfNodeExtension extends Extension
                         ->setClass(TemplateDefinition::class)
                         ->addMethodCall('setName', [$template['name']])
                         ->addMethodCall('setPath', [$template['path']])
-                        ->addMethodCall('setNodes', [$template['nodes']]);
+                        ->addMethodCall('setTags', [$template['tags']]);
                 }, $nodeDefinition['templates'])])
         ]);
     }
