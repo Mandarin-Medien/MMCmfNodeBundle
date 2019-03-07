@@ -12,4 +12,5 @@ namespace MandarinMedien\MMCmfNodeBundle\Entity;
 interface NodeRouteDomainInterface
 {
     public function getName(): string;
+    public function __toString(): string;
 }

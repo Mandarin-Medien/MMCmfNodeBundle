@@ -15,5 +15,5 @@ interface LanguageNodeInterface extends RoutableNodeInterface
      *
      * @return string
      */
-    public function getLocale(): string;
+    public function getLocale():? string;
 }

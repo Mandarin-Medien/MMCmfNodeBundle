@@ -2,7 +2,6 @@
 
 namespace MandarinMedien\MMCmfNodeBundle\Request;
 
-use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use MandarinMedien\MMCmfNodeBundle\Entity\NodeRoute;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
@@ -27,7 +26,7 @@ class NodeRouteParamConverter implements ParamConverterInterface
      */
     function apply(Request $request, ParamConverter $configuration)
     {
-        if($request->get('_route') !== "mm_cmf_node")
+        if ($request->get('_route') !== "mm_cmf_node")
             return false;
 
         $domain = null;
@@ -47,27 +46,23 @@ class NodeRouteParamConverter implements ParamConverterInterface
         throw new NotFoundHttpException('Route ' . $routeUri . ' not found.');
     }
 
-    function getNodeRoute($uri, $domain = "*")
+    function getNodeRoute($uri, $domain = null)
     {
         $routeUri = (strpos($uri, '/') === 0) ? $uri : '/' . $uri;
 
         $qb = $this->manager
             ->createQueryBuilder()
-            ->select('nr')
-            ->from($this->repositoryClass, 'nr')
-            ->where('nr.route = :route')
+            ->select('nodeRoute, domain')
+            ->from($this->repositoryClass, 'nodeRoute')
+            ->where('nodeRoute.route = :route')
+            ->setMaxResults(1)
             ->setParameter(':route', $routeUri);
 
         if ($domain) {
-
-            $qb->andWhere(' (
-                nr.domains IS NULL
-                OR
-                nr.domains LIKE :domain
-                OR
-                nr.domains LIKE \'%"*"%\'
-          )  ')
-                ->setParameter(':domain', '%"' . $domain . '"%');
+            $qb
+                ->leftJoin('nodeRoute.domains', 'domain')
+                ->andWhere(' domain is NULL OR domain.name = :domain')
+                ->setParameter(':domain', $domain);
         }
 
         $node = $qb->getQuery()->getResult();

@@ -2,10 +2,11 @@
 
 namespace MandarinMedien\MMCmfNodeBundle\Factory;
 
-use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use MandarinMedien\MMCmfNodeBundle\Entity\NodeRoute;
+use MandarinMedien\MMCmfNodeBundle\Entity\NodeRouteDomainInterface;
 use MandarinMedien\MMCmfNodeBundle\Entity\NodeRouteInterface;
+use MandarinMedien\MMCmfNodeBundle\Entity\RoutableNodeInterface;
 
 /**
  * Class NodeRouteFactory
@@ -80,5 +81,26 @@ class NodeRouteFactory
         } else {
             throw new \Exception('class not found');
         }
+    }
+
+    /**
+     * @param $parentNode
+     * @return array|NodeRouteDomainInterface[]
+     */
+    public function getParentNodeRouteDomains(RoutableNodeInterface $parentNode = null)
+    {
+        $domains = [];
+
+        if (!$parentNode)
+            return $domains;
+
+        foreach ($parentNode->getRoutes() as $route) {
+            $domains = array_merge($domains, $route->getDomains()->toArray());
+        }
+
+        array_unique($domains);
+        sort($domains);
+
+        return $domains;
     }
 }

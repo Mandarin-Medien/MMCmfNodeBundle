@@ -31,4 +31,5 @@ class NodeRouteDomain extends BaseNodeRouteDomain
      * @var string
      */
     protected $name;
+
 }

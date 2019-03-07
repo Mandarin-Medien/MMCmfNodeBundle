@@ -18,7 +18,7 @@ class BaseNodeRouteDomain implements NodeRouteDomainInterface
      * @var string
      * @Assert\NotBlank()
      */
-    private $name;
+    protected $name;
 
     /**
      * @return string
@@ -39,4 +39,11 @@ class BaseNodeRouteDomain implements NodeRouteDomainInterface
         return $this;
     }
 
+    /**
+     * @return string
+     */
+    public function __toString(): string
+    {
+        return $this->getName();
+    }
 }
