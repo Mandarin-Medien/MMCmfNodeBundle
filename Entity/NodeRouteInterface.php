@@ -2,9 +2,6 @@
 
 namespace MandarinMedien\MMCmfNodeBundle\Entity;
 
-use MandarinMedien\MMCmfNodeBundle\Entity\Node;
-
-
 /**
  * Interface NodeRouteInterface
  * @package MandarinMedien\MMCmfNodeBundle\Entity
@@ -23,20 +20,20 @@ interface NodeRouteInterface
     public function getRoute();
 
     /**
-     * @param string $domain
+     * @param NodeRouteDomainInterface $domain
      * @return $this
      */
-    public function addDomain(string $domain);
+    public function addDomain(NodeRouteDomainInterface $domain);
 
     /**
-     * @return array
+     * @return array|NodeRouteDomainInterface[]
      */
     public function getDomains();
 
     /**
-     * @param string $domain
+     * @param NodeRouteDomainInterface $domain
      * @return $this
      */
-    public function removeDomain(string $domain);
+    public function removeDomain(NodeRouteDomainInterface $domain);
 }
 
