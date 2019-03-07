@@ -1,4 +1,0 @@
-MandarinMedien\MMCmfNodeBundle\Entity\AliasNodeRoute:
-    type: entity
-    table: null
-    lifecycleCallbacks: {  }

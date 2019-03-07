@@ -2,10 +2,12 @@
 
 namespace MandarinMedien\MMCmfNodeBundle\Entity;
 
+use Doctrine\ORM\Mapping as ORM;
 use MandarinMedien\MMCmfNodeBundle\Validator\Constraint as RoutingAssert;
 
 /**
  * RedirectNodeRoute
+ * @ORM\Entity()
  *
  * @TODO: Extend RedirectNodeRoute, so an target Route is selectable
  */
@@ -13,6 +15,7 @@ class RedirectNodeRoute extends NodeRoute
 {
 
     /**
+     * @ORM\Column(type="integer",length=3)
      * @var int
      * @RoutingAssert\RedirectStatusCode
      */
