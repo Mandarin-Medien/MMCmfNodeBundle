@@ -2,14 +2,9 @@
 
 namespace MandarinMedien\MMCmfNodeBundle\Templating;
 
-use Doctrine\ORM\EntityManagerInterface;
-use MandarinMedien\MMCmfNodeBundle\Entity\Node;
 use MandarinMedien\MMCmfNodeBundle\Entity\NodeInterface;
 use MandarinMedien\MMCmfNodeBundle\Entity\TemplatableNodeInterface;
 use MandarinMedien\MMCmfNodeBundle\Factory\NodeFactory;
-use MandarinMedien\MMCmfNodeBundle\Resolver\NodeDefinitionResolver;
-use MandarinMedien\MMCmfNodeBundle\Resolver\NodeTemplateResolver;
-use MandarinMedien\MMCmfNodeBundle\Resolver\TemplateDefinitionResolver;
 use MandarinMedien\MMSearchBundle\Serializer\Factory;
 use Symfony\Bundle\TwigBundle\TwigEngine;
 use Symfony\Component\HttpKernel\KernelInterface;
@@ -48,8 +43,10 @@ class TemplateManager
 
     /**
      * TemplateManager constructor.
+     * @param NodeFactory$factory
      * @param TwigEngine $twig
      * @param KernelInterface $kernel
+     * @param string $overrideDir
      */
     public function __construct(NodeFactory $factory, TwigEngine $twig, KernelInterface $kernel, string $overrideDir)
     {

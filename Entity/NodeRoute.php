@@ -2,38 +2,49 @@
 
 namespace MandarinMedien\MMCmfNodeBundle\Entity;
 
-use Symfony\Component\Validator\Constraints as Assert;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ORM\Mapping as ORM;
 use MandarinMedien\MMCmfNodeBundle\Validator\Constraint as RoutingAssert;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * NodeRoute
  * @RoutingAssert\NodeRouteUnique
+ * @ORM\Entity()
+ * @ORM\Table(indexes={@ORM\Index(name="uri_index",columns={"route"})})
+ * @ORM\InheritanceType("SINGLE_TABLE")
+ * @ORM\DiscriminatorMap({"default"= "NodeRoute","auto"= "AutoNodeRoute","alias"= "AliasNodeRoute","redirect"= "RedirectNodeRoute","external"= "ExternalNodeRoute"})
  */
 class NodeRoute implements NodeRouteInterface
 {
     /**
-     * @var integer
+     * @ORM\Column(type="integer")
+     * @ORM\Id()
+     * @ORM\GeneratedValue()
+     * @var string
      */
     protected $id;
 
     /**
-     * @var Node
-     */
-    protected $node;
-
-    /**
      * @Assert\NotBlank
+     * @ORM\Column(nullable=false)
      */
     protected $route;
 
     /**
-     * @var array
+     * @var NodeInterface
+     */
+    protected $node;
+
+    /**
+     * @var array|NodeRouteDomainInterface[]
+     * @ORM\ManyToMany(targetEntity="MandarinMedien\MMCmfNodeBundle\Entity\NodeRouteDomainInterface")
      */
     protected $domains;
 
     public function __construct()
     {
-        $this->domains = [];
+        $this->domains = new ArrayCollection();
     }
 
     /**
@@ -71,36 +82,32 @@ class NodeRoute implements NodeRouteInterface
     }
 
     /**
-     * @param string $domain
-     * @return $this
-     */
-    public function addDomain(string $domain)
-    {
-        if (!in_array($domain, $this->domains))
-            $this->domains[] = $domain;
-
-        return $this;
-
-    }
-
-    /**
-     * @return array
+     * @return NodeRouteDomainInterface[]|array
      */
     public function getDomains()
     {
         return $this->domains;
     }
 
+
     /**
-     * @param string $domain
-     * @return $this|NodeRouteInterface
+     * @param NodeRouteDomainInterface $domain
+     * @return $this
      */
-    public function removeDomain(string $domain)
+    public function addDomain(NodeRouteDomainInterface $domain)
     {
-        if (false !== ($index = array_search($domain, $this->domains))) {
-            unset($this->domains[$index]);
-            $this->domains = array_values($this->domains);
-        }
+        $this->domains->add($domain);
+
+        return $this;
+    }
+
+    /**
+     * @param NodeRouteDomainInterface $domain
+     * @return $this
+     */
+    public function removeDomain(NodeRouteDomainInterface $domain)
+    {
+        $this->domains->removeElement($domain);
 
         return $this;
     }

@@ -1,5 +1,0 @@
-MandarinMedien\MMCmfNodeBundle\Entity\ExternalNodeRoute:
-    type: entity
-    table: null
-
-    lifecycleCallbacks: {  }

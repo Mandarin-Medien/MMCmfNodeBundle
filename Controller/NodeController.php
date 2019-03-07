@@ -4,14 +4,13 @@ namespace MandarinMedien\MMCmfNodeBundle\Controller;
 
 use MandarinMedien\MMCmfNodeBundle\Entity\AliasNodeRoute;
 use MandarinMedien\MMCmfNodeBundle\Entity\AutoNodeRoute;
+use MandarinMedien\MMCmfNodeBundle\Entity\NodeRoute;
 use MandarinMedien\MMCmfNodeBundle\Entity\RedirectNodeRoute;
+use MandarinMedien\MMCmfNodeBundle\Entity\TemplatableNodeInterface;
 use MandarinMedien\MMCmfNodeBundle\Resolver\NodeResolver;
 use MandarinMedien\MMCmfNodeBundle\Templating\TemplateManager;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use MandarinMedien\MMCmfNodeBundle\Entity\Node;
-use MandarinMedien\MMCmfNodeBundle\Entity\NodeRoute;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
-use MandarinMedien\MMCmfNodeBundle\Entity\TemplatableNodeInterface;
 
 class NodeController extends Controller
 {
@@ -68,7 +67,7 @@ class NodeController extends Controller
      *
      * @TODO: Extend RedirectNodeRoute, so an target Route is selectable
      *
-     * @param Node $node
+     * @param RedirectNodeRoute $nodeRoute
      * @return \Symfony\Component\HttpFoundation\RedirectResponse
      */
     public function redirectAction(RedirectNodeRoute $nodeRoute)

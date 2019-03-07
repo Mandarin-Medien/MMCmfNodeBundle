@@ -3,10 +3,9 @@
 namespace MandarinMedien\MMCmfNodeBundle\Resolver;
 
 use Doctrine\ORM\EntityManagerInterface;
-use MandarinMedien\MMCmfNodeBundle\Entity\Node;
-use MandarinMedien\MMCmfNodeBundle\Factory\NodeFactory;
 use MandarinMedien\MMCmfNodeBundle\Entity\NodeRouteInterface;
 use MandarinMedien\MMCmfNodeBundle\Entity\RoutableNodeInterface;
+use MandarinMedien\MMCmfNodeBundle\Factory\NodeFactory;
 
 
 /**

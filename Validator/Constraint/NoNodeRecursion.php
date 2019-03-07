@@ -2,7 +2,6 @@
 
 namespace MandarinMedien\MMCmfNodeBundle\Validator\Constraint;
 
-use Doctrine\ORM\EntityManager;
 use Symfony\Component\Validator\Constraint;
 
 /**
