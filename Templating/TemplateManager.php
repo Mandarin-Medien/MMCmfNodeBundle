@@ -60,14 +60,7 @@ class TemplateManager
 
     }
 
-    /**
-     * get the bundle name form entity namespace
-     *
-     * @param $entityNamespace
-     * @param $bundles
-     * @return int|string|null
-     * @throws \ReflectionException
-     */
+
     /**
      * get the bundle name form entity namespace
      *
@@ -130,16 +123,19 @@ class TemplateManager
 
         foreach(array_reverse($idList) as $id) {
 
-            $localTemplateTmp = preg_replace('/^(@[a-zA-Z0-9_]+)/', "$1/" . $id, $path);
-            
-            $localTemplate = $this->twig->exists($localTemplateTmp)
-                ? $localTemplateTmp
-                : $localTemplate;
+            if(preg_match('/^(@[a-zA-Z0-9_]+\/|[a-zA-Z0-9_]+:)(.+)/', $path, $matches))
+            {
+                $bundle = $matches[1];
+                $path = $matches[2];
+
+                $localTemplateTmp = $bundle.$id.'/'.$path;
+
+                $localTemplate = $this->twig->exists($localTemplateTmp)
+                    ? $localTemplateTmp
+                    : $localTemplate;
+            }
         }
 
         return $localTemplate;
     }
-
-
-
 }
