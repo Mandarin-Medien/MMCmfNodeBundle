@@ -326,77 +326,80 @@ class NodeFactory
     /**
      * build the node tree
      *
+     * warning: this method mutates the input data
+     *
      * @param array $nodes
      * @param null $parent
      * @return array
      * @throws
      */
-    public function _buildTree(&$nodes, $parent = null, $parentKey = null)
+    public function _buildTree(&$nodes, NodeMeta $parent = null)
     {
 
         $tree = [];
 
-        foreach($nodes as &$node) {
-
-            $className = $this->getClassByDiscriminator($node['dtype']);
-
-            // build the key for the node defintion
-            $definitionKey = $parentKey
-                ? ($parentKey.NodeDefinitionResolver::KEY_SEPARATOR.$className)
-                : $className;
-
-            /**
-             * @var NodeDefinition $definition
-             */
-            $definition = $this->definitionResolver->resolveByKey($definitionKey);
+        foreach($nodes as $key => &$node) {
 
 
-            // add the class from dtype
-            $node['className'] = $className;
-
-            // set the definition
-            $node['definition'] = $definition;
-
-            // set the tags
-            $node['tags'] = array_merge(
-                ($parent ? $parent['tags'] : []),
-                ($this->tagRegistry->has($node['id'])
-                    ? [$this->tagRegistry->get($node['id'])]
-                    : []
-                )
-            );
+            // skip already processed entries
+            if($node instanceof NodeMeta)
+                continue;
 
 
-            // set the key for resolving icons and possible child classes
-            //$node['definitionKey'] = $definitionKey;
+            if($node['parent'] == ($parent ? $parent->getId() : null)) {
 
-            // add the icon
-            //$node['icon'] = $definition ? $definition->getIcon() : null;
+                $className = $this->getClassByDiscriminator($node['dtype']);
 
-            // add the children
-            //$node['children'] = $definition['children'];
+                // build the key for the node defintion
+                $definitionKey = $parent
+                    ? ($parent->getKey().NodeDefinitionResolver::KEY_SEPARATOR.$className)
+                    : $className;
 
-            // collect to flatten array
-            $this->treeFlatten[$node['id']] = $node;
+                /**
+                 * @var NodeDefinition $definition
+                 */
+                $definition = $this->definitionResolver->resolveByKey($definitionKey);
 
-            if($node['parent'] === $parent['id']) {
+
+                $nodeMeta = new NodeMeta();
+                $nodeMeta
+                    ->setName($node['name'])
+                    ->setId($node['id'])
+                    ->setKey($definitionKey)
+                    ->setPosition($node['position'])
+                    ->setClassname($className)
+                    ->setDefinition($definition)
+                    ->setDtype($node['dtype'])
+                    ->setTags(array_merge(
+                        ($parent ? $parent->getTags() : []),
+                        ($this->tagRegistry->has($node['id'])
+                            ? [$this->tagRegistry->get($node['id'])]
+                            : []
+                        )));
+
+                $node = $nodeMeta;
+                $this->treeFlatten[$node->getId()] = $node;
+
                 $_node = $node;
-                unset($node);
-                $tree[] = array_merge($_node, ['children' => $this->_buildTree($nodes, $_node, $definitionKey)]);
+
+                foreach($this->_buildTree($nodes, $_node, $definitionKey) as $childNodeMeta) {
+                    $_node->addChild($childNodeMeta);
+                }
+
+                $tree[] = $_node;
             }
-
-
-
-
         };
 
 
         // sort by positions
-        usort($tree, function($a, $b) {
+        usort($tree, function(NodeMeta $a, NodeMeta $b) {
 
-            if($a['position'] < $b['position']) {
+            $posA = $a->getPosition();
+            $posB = $b->getPosition();
+
+            if($posA < $posB) {
                 return -1;
-            } elseif($a['position'] > $b['position']) {
+            } elseif($posA > $posB) {
                 return 1;
             } else {
                 return 0;
@@ -405,6 +408,38 @@ class NodeFactory
 
         return $tree;
 
+    }
+
+
+    protected function createMeta($node, $key_prefix)
+    {
+
+        $className = $this->getClassByDiscriminator($node['dtype']);
+
+        // build the key for the node definition
+        $definitionKey = $key_prefix
+            ? ($key_prefix.NodeDefinitionResolver::KEY_SEPARATOR.$className)
+            : $className;
+
+        /**
+         * @var NodeDefinition $definition
+         */
+        $definition = $this->definitionResolver->resolveByKey($definitionKey);
+
+        $nodeMeta = new NodeMeta();
+        $nodeMeta
+            ->setId($node['id'])
+            ->setPosition($node['position'])
+            ->setClassname($className)
+            ->setDefinition($definition);
+            /*->setTags(array_merge(
+                ($parent ? $parent->getTags() : []),
+                ($this->tagRegistry->has($node['id'])
+                    ? [$this->tagRegistry->get($node['id'])]
+                    : []
+                )));*/
+
+        return $nodeMeta;
     }
 
 
