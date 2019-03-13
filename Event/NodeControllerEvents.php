@@ -8,7 +8,7 @@
 
 namespace MandarinMedien\MMCmfNodeBundle\Event;
 
-final class NodeEvents
+final class NodeControllerEvents
 {
     const BEFORE_RESOLVING = 'mm.node.before_resolving';
     const AFTER_RESOLVING = 'mm.node.after_resolving';

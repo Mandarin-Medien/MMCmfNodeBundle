@@ -12,13 +12,20 @@ use MandarinMedien\MMCmfNodeBundle\Entity\NodeRouteInterface;
 use Symfony\Component\EventDispatcher\Event;
 use Symfony\Component\HttpFoundation\Request;
 
-class NodeEvent extends Event
+class NodeControllerEvent extends Event
 {
+    /**
+     * @var Request
+     */
     protected $request;
+
+    /**
+     * @var NodeRouteInterface
+     */
     protected $nodeRoute;
 
     /**
-     * NodeEvent constructor.
+     * NodeControllerEvent constructor.
      *
      * @param Request $request
      * @param NodeRouteInterface $nodeRoute

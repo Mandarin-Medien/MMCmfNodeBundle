@@ -7,8 +7,12 @@ use MandarinMedien\MMCmfNodeBundle\Entity\AutoNodeRoute;
 use MandarinMedien\MMCmfNodeBundle\Entity\NodeRoute;
 use MandarinMedien\MMCmfNodeBundle\Entity\RedirectNodeRoute;
 use MandarinMedien\MMCmfNodeBundle\Entity\TemplatableNodeInterface;
-use MandarinMedien\MMCmfNodeBundle\Event\NodeEvent;
-use MandarinMedien\MMCmfNodeBundle\Event\NodeEvents;
+use MandarinMedien\MMCmfNodeBundle\Event\NodeControllerEvent;
+use MandarinMedien\MMCmfNodeBundle\Event\NodeControllerEvents;
+use MandarinMedien\MMCmfNodeBundle\Event\NodeControllerWithNodeEvent;
+use MandarinMedien\MMCmfNodeBundle\Event\NodeControllerWithResponseEvent;
+use MandarinMedien\MMCmfNodeBundle\Event\NodeControllerWithTemplateDataEvent;
+use MandarinMedien\MMCmfNodeBundle\Exception\NoTemplatableNodeFoundException;
 use MandarinMedien\MMCmfNodeBundle\Resolver\NodeResolver;
 use MandarinMedien\MMCmfNodeBundle\Templating\TemplateManager;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -29,15 +33,17 @@ class NodeController extends Controller
     {
 
         // before resolving &$request, &$nodeRoute
-        $dispatcher->dispatch(NodeEvents::BEFORE_RESOLVING, new NodeEvent($request, $nodeRoute));
+        $dispatcher->dispatch(NodeControllerEvents::BEFORE_RESOLVING, new NodeControllerEvent($request, $nodeRoute));
 
         if ($node = $this->get(NodeResolver::class)->resolve($nodeRoute)) {
 
             // after resolving &$request, &$node, &$nodeRoute
+            $dispatcher->dispatch(NodeControllerEvents::AFTER_RESOLVING, new NodeControllerWithNodeEvent($request, $nodeRoute, $node));
 
             if ($nodeRoute instanceof RedirectNodeRoute) {
 
                 // before redirect &$request, &$node, &$nodeRoute,
+                $dispatcher->dispatch(NodeControllerEvents::BEFORE_REDIRECT, new NodeControllerWithNodeEvent($request, $nodeRoute, $node));
 
                 return $this->redirectAction($nodeRoute);
             } else {
@@ -50,10 +56,13 @@ class NodeController extends Controller
                         'route' => $nodeRoute
                     );
                     // before render - &$request, &$node, &$nodeRoute, &$templateFile, &$templateData
+                    $dispatcher->dispatch(NodeControllerEvents::BEFORE_RENDER, new NodeControllerWithTemplateDataEvent($request, $nodeRoute, $node, $templateData));
 
+                    // render response
                     $response = $this->render($templateFile, $templateData);
 
                     // after render - &$request, &$node, &$nodeRoute, $templateFile, $templateData
+                    $dispatcher->dispatch(NodeControllerEvents::AFTER_RENDER, new NodeControllerWithResponseEvent($request, $nodeRoute, $response));
 
                     /**
                      * should be configurable
@@ -65,21 +74,22 @@ class NodeController extends Controller
                     $response->headers->addCacheControlDirective('must-revalidate', true);
 
                     // before response &$request, &$response, &$node, &$nodeRoute,
+                    $dispatcher->dispatch(NodeControllerEvents::BEFORE_RESPONSE, new NodeControllerWithResponseEvent($request, $nodeRoute, $response));
 
                     return $response;
 
                 } else {
 
                     // before not found -  &$request, &$nodeRoute
-                    $dispatcher->dispatch(NodeEvents::BEFORE_NOT_FOUND, new NodeEvent($request, $nodeRoute));
+                    $dispatcher->dispatch(NodeControllerEvents::BEFORE_NOT_FOUND, new NodeControllerWithNodeEvent($request, $nodeRoute, $node));
 
-                    throw new NotFoundHttpException();
+                    throw new NoTemplatableNodeFoundException(null, null, 0, $node, $nodeRoute);
                 }
             }
         } else {
 
             // before not found -  &$request, &$nodeRoute
-            $dispatcher->dispatch(NodeEvents::BEFORE_NOT_FOUND, new NodeEvent($request, $nodeRoute));
+            $dispatcher->dispatch(NodeControllerEvents::BEFORE_NOT_FOUND, new NodeControllerEvent($request, $nodeRoute));
 
             throw new NotFoundHttpException();
         }
