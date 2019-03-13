@@ -129,7 +129,7 @@ class TemplateManager
     protected function resolveLocalTemplate($templatePath, $node)
     {
         $nodeMeta = $this->factory->getNodeMeta($node);
-        $tags = $nodeMeta['tags'];
+        $tags = $nodeMeta->getTags();
 
         foreach(array_reverse($tags) as $tag) {
 

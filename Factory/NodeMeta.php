@@ -67,6 +67,11 @@ class NodeMeta
      */
     public $dtype;
 
+    /**
+     * @var bool
+     */
+    public $visible;
+
 
     public function __construct()
     {
@@ -268,5 +273,24 @@ class NodeMeta
     public function __toString()
     {
         return $this->id . ' (' .$this->name.')';
+    }
+
+    /**
+     * @return bool
+     */
+    public function isVisible(): bool
+    {
+        return $this->visible;
+    }
+
+    /**
+     * @param bool $visible
+     * @return NodeMeta
+     */
+    public function setVisible(bool $visible): NodeMeta
+    {
+        $this->visible = $visible;
+
+        return $this;
     }
 }
