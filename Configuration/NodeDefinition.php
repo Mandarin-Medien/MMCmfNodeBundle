@@ -34,6 +34,7 @@ class NodeDefinition
     public $className;
 
 
+
     public function setKey(string $key) :NodeDefinition
     {
         $this->key = $key;
@@ -134,5 +135,4 @@ class NodeDefinition
         $this->children[] = $className;
         return $this;
     }
-
 }

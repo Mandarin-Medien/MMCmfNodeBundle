@@ -5,7 +5,7 @@ namespace MandarinMedien\MMCmfNodeBundle\Factory;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Query\ResultSetMapping;
 use MandarinMedien\MMCmfNodeBundle\Configuration\NodeDefinition;
-use MandarinMedien\MMCmfNodeBundle\Configuration\NodeRegistry;
+use MandarinMedien\MMCmfNodeBundle\Configuration\TagRegistry;
 use MandarinMedien\MMCmfNodeBundle\Entity\NodeInterface;
 use MandarinMedien\MMCmfNodeBundle\Resolver\NodeDefinitionResolver;
 
@@ -56,16 +56,36 @@ class NodeFactory
 
 
     /**
+     * @var TagRegistry
+     */
+    protected $tagRegistry;
+
+
+    /**
+     * @var array
+     */
+    protected $tree;
+
+    /**
+     * @var array
+     */
+    protected $treeFlatten;
+
+
+
+    /**
      * NodeFactory constructor.
      * @param EntityManagerInterface $manager
      * @param NodeDefinitionResolver $definitionResolver
+     * @param TagRegistry $tagRegistry
      */
-    public function __construct(EntityManagerInterface $manager, NodeDefinitionResolver $definitionResolver)
+    public function __construct(EntityManagerInterface $manager, NodeDefinitionResolver $definitionResolver, TagRegistry $tagRegistry)
     {
-        $this->childDefintions = [];
+        $this->childDefinitions = [];
         $this->icons = [];
         $this->manager = $manager;
         $this->definitionResolver = $definitionResolver;
+        $this->tagRegistry = $tagRegistry;
     }
 
 
@@ -98,6 +118,7 @@ class NodeFactory
 
         // prefilter discriminators by subclasses
         $subclasses = $this->getMeta()->subClasses;
+
 
         $discriminators = ([$this->getMeta()->discriminatorValue => $this->getRootClass()] + array_filter(
                 $this->getMeta()->discriminatorMap,
@@ -172,8 +193,8 @@ class NodeFactory
         }
 
 
-        if (!isset($this->childDefintions[$parent])) $this->childDefintions[$parent] = [];
-        if (!in_array($child, $this->childDefintions[$parent])) $this->childDefintions[$parent][] = $child;
+        if (!isset($this->childDefintions[$parent])) $this->childDefinitions[$parent] = [];
+        if (!in_array($child, $this->childDefinitions[$parent])) $this->childDefinitions[$parent][] = $child;
 
         return $this;
     }
@@ -186,7 +207,7 @@ class NodeFactory
      */
     public function getChildNodeDefinition($parent)
     {
-        return isset($this->childDefintions[$parent]) ? $this->childDefintions[$parent] : [];
+        return isset($this->childDefintions[$parent]) ? $this->childDefinitions[$parent] : [];
     }
 
 
@@ -195,7 +216,7 @@ class NodeFactory
      */
     public function getChildNodeDefinitions()
     {
-        return $this->childDefintions;
+        return $this->childDefinitions;
     }
 
 
@@ -226,6 +247,7 @@ class NodeFactory
 
         if (!$metaData)
             $metaData = $this->manager->getClassMetadata($this->rootClass);
+
 
         return $metaData;
     }
@@ -266,22 +288,38 @@ class NodeFactory
     }
 
     /**
-     * @Todo: find better way to handle the relation between dytpe and classNames
      * @param NodeInterface|null $node
      * @return array
      * @throws
      */
     public function getTree(NodeInterface $node = null)
     {
-        $nodes = $this->getNodes();
+        if(!$this->tree)
+            $this->build();
+
+        return $this->tree;
+    }
 
 
-        /**
-         * @Todo: Maybe do some caching here
-         */
-        $tree = $this->_buildTree($nodes);
+    /**
+     * @return array
+     */
+    public function getFlattenTree()
+    {
+        if(!$this->treeFlatten)
+            $this->build();
 
-        return $tree;
+        return $this->treeFlatten;
+    }
+
+
+    /**
+     * @param NodeInterface $node
+     * @return mixed
+     */
+    public function getNodeMeta(NodeInterface $node)
+    {
+        return $this->getFlattenTree()[$node->getId()];
     }
 
 
@@ -295,6 +333,7 @@ class NodeFactory
      */
     public function _buildTree(&$nodes, $parent = null, $parentKey = null)
     {
+
         $tree = [];
 
         foreach($nodes as &$node) {
@@ -311,10 +350,22 @@ class NodeFactory
              */
             $definition = $this->definitionResolver->resolveByKey($definitionKey);
 
+
             // add the class from dtype
             $node['className'] = $className;
 
+            // set the definition
             $node['definition'] = $definition;
+
+            // set the tags
+            $node['tags'] = array_merge(
+                ($parent ? $parent['tags'] : []),
+                ($this->tagRegistry->has($node['id'])
+                    ? [$this->tagRegistry->get($node['id'])]
+                    : []
+                )
+            );
+
 
             // set the key for resolving icons and possible child classes
             //$node['definitionKey'] = $definitionKey;
@@ -325,11 +376,17 @@ class NodeFactory
             // add the children
             //$node['children'] = $definition['children'];
 
-            if($node['parent'] === $parent) {
+            // collect to flatten array
+            $this->treeFlatten[$node['id']] = $node;
+
+            if($node['parent'] === $parent['id']) {
                 $_node = $node;
                 unset($node);
-                $tree[] = array_merge($_node, ['children' => $this->_buildTree($nodes, $_node['id'], $definitionKey)]);
+                $tree[] = array_merge($_node, ['children' => $this->_buildTree($nodes, $_node, $definitionKey)]);
             }
+
+
+
 
         };
 
@@ -391,6 +448,7 @@ class NodeFactory
     /**
      * return a flatten list with all entities implementing NodeInterface
      * @return array
+     * @throws
      */
     public function getClassIndex()
     {
@@ -402,25 +460,21 @@ class NodeFactory
              * for resolving dtypes
              */
             foreach ($this->getDiscriminators() as $dtype)
-                $classIndex[$this->getClassByDiscriminator($dtype)] = $dtype;
+                $this->classIndex[$this->getClassByDiscriminator($dtype)] = $dtype;
         }
+
 
         return $this->classIndex;
     }
 
 
-    public function getNodeMeta($nodeInterfaceOrId)
+    /**
+     * build a fresh node tree
+     */
+    protected function build(): void
     {
-        $id = $nodeInterfaceOrId instanceof NodeInterface
-            ? $nodeInterfaceOrId->getId()
-            : $nodeInterfaceOrId;
-
-        $node = array_filter($this->getNodes(), function ($node) use ($id) {
-            return $id === $node['id'];
-        });
-        $node = reset($node);
-
+        $nodes = $this->getNodes();
+        $this->treeFlatten = [];
+        $this->tree = $this->_buildTree($nodes);
     }
-
-
 }
