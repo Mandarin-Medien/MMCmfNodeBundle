@@ -119,6 +119,7 @@ class NodeFactory
         // prefilter discriminators by subclasses
         $subclasses = $this->getMeta()->subClasses;
 
+
         $discriminators = ([$this->getMeta()->discriminatorValue => $this->getRootClass()] + array_filter(
                 $this->getMeta()->discriminatorMap,
                 function ($class) use ($subclasses) {
@@ -246,6 +247,7 @@ class NodeFactory
 
         if (!$metaData)
             $metaData = $this->manager->getClassMetadata($this->rootClass);
+
 
         return $metaData;
     }
@@ -458,8 +460,9 @@ class NodeFactory
              * for resolving dtypes
              */
             foreach ($this->getDiscriminators() as $dtype)
-                $classIndex[$this->getClassByDiscriminator($dtype)] = $dtype;
+                $this->classIndex[$this->getClassByDiscriminator($dtype)] = $dtype;
         }
+
 
         return $this->classIndex;
     }

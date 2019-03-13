@@ -3,7 +3,7 @@
 namespace MandarinMedien\MMCmfNodeBundle\DependencyInjection;
 
 use MandarinMedien\MMCmfNodeBundle\Factory\NodeFactory;
-use MandarinMedien\MMCmfContentBundle\Templating\TemplateManager;
+use MandarinMedien\MMCmfNodeBundle\Templating\TemplateManager;
 use MandarinMedien\MMCmfNodeBundle\Configuration\NodeDefinition;
 use MandarinMedien\MMCmfNodeBundle\Configuration\NodeRegistry;
 use MandarinMedien\MMCmfNodeBundle\Configuration\TagRegistry;
