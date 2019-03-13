@@ -4,6 +4,8 @@ namespace MandarinMedien\MMCmfNodeBundle\Request;
 
 use Doctrine\ORM\EntityManagerInterface;
 use MandarinMedien\MMCmfNodeBundle\Entity\NodeRoute;
+use MandarinMedien\MMCmfNodeBundle\Entity\NodeRouteInterface;
+use MandarinMedien\MMCmfNodeBundle\Resolver\NodeRouteResolver;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Request\ParamConverter\ParamConverterInterface;
 use Symfony\Component\HttpFoundation\Request;
@@ -11,14 +13,14 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class NodeRouteParamConverter implements ParamConverterInterface
 {
+    /**
+     * @var NodeRouteResolver
+     */
+    private $nodeRouteResolver;
 
-    private $manager;
-    private $repositoryClass = NodeRoute::class;
-    private $routeParamName = 'route';
-
-    public function __construct(EntityManagerInterface $manager)
+    public function __construct(NodeRouteResolver $nodeRouteResolver)
     {
-        $this->manager = $manager;
+        $this->nodeRouteResolver = $nodeRouteResolver;
     }
 
     /**
@@ -35,7 +37,7 @@ class NodeRouteParamConverter implements ParamConverterInterface
 
         $routeUri = $request->attributes->get('route');
 
-        if ($domain !== null && $routeUri !== null && !is_null($route = $this->getNodeRoute($routeUri, $domain))) {
+        if ($domain !== null && $routeUri !== null && !is_null($route = $this->nodeRouteResolver->getNodeRoute($routeUri, $domain))) {
 
             $request->attributes->add(
                 array($configuration->getName() => $route)
@@ -46,35 +48,12 @@ class NodeRouteParamConverter implements ParamConverterInterface
         throw new NotFoundHttpException('Route ' . $routeUri . ' not found.');
     }
 
-    function getNodeRoute($uri, $domain = null)
-    {
-        $routeUri = (strpos($uri, '/') === 0) ? $uri : '/' . $uri;
-
-        $qb = $this->manager
-            ->createQueryBuilder()
-            ->select('nodeRoute, domain')
-            ->from($this->repositoryClass, 'nodeRoute')
-            ->where('nodeRoute.route = :route')
-            ->setMaxResults(1)
-            ->setParameter(':route', $routeUri);
-
-        if ($domain) {
-            $qb
-                ->leftJoin('nodeRoute.domains', 'domain')
-                ->andWhere(' domain is NULL OR domain.name = :domain')
-                ->setParameter(':domain', $domain);
-        }
-
-        $node = $qb->getQuery()->getResult();
-
-        return count($node) ? $node[0] : null;
-    }
 
     /**
      * {@inheritdoc}
      */
     function supports(ParamConverter $configuration)
     {
-        return $configuration->getClass() == $this->repositoryClass;
+        return $configuration->getClass() == NodeRoute::class;
     }
 }

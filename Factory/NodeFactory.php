@@ -316,7 +316,7 @@ class NodeFactory
 
     /**
      * @param NodeInterface $node
-     * @return mixed
+     * @return NodeMeta
      */
     public function getNodeMeta(NodeInterface $node)
     {
@@ -371,6 +371,7 @@ class NodeFactory
                     ->setClassname($className)
                     ->setDefinition($definition)
                     ->setDtype($node['dtype'])
+                    ->setVisible($node['visible'])
                     ->setTags(array_merge(
                         ($parent ? $parent->getTags() : []),
                         ($this->tagRegistry->has($node['id'])
