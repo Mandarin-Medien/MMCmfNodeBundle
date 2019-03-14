@@ -17,10 +17,6 @@ use Symfony\Component\HttpFoundation\Response;
 class NodeControllerWithNodeEvent extends NodeControllerEvent
 {
     /**
-     * @var Response
-     */
-    private $response;
-    /**
      * @var NodeInterface
      */
     private $node;
@@ -32,7 +28,7 @@ class NodeControllerWithNodeEvent extends NodeControllerEvent
      * @param NodeRouteInterface $nodeRoute
      * @param NodeInterface $node
      */
-    public function __construct(Request &$request, NodeRouteInterface &$nodeRoute, NodeInterface &$node)
+    public function __construct(Request $request, NodeRouteInterface $nodeRoute, NodeInterface $node)
     {
        parent::__construct($request,$nodeRoute);
         $this->node = $node;

@@ -30,7 +30,7 @@ class NodeControllerEvent extends Event
      * @param Request $request
      * @param NodeRouteInterface $nodeRoute
      */
-    public function __construct(Request &$request, NodeRouteInterface &$nodeRoute)
+    public function __construct(Request $request, NodeRouteInterface $nodeRoute)
     {
         $this->request = $request;
         $this->nodeRoute = $nodeRoute;
