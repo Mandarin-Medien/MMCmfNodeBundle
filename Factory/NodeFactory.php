@@ -284,11 +284,11 @@ class NodeFactory
     public function getIcon($class)
     {
         return isset($this->icons[$class]) ? $this->icons[$class] : $this->defaultIcon;
-
     }
 
     /**
      * @param NodeInterface|null $node
+     * @Todo: Implement caching
      * @return array
      * @throws
      */
@@ -302,6 +302,7 @@ class NodeFactory
 
 
     /**
+     * @Todo: Implement caching
      * @return array
      */
     public function getFlattenTree()
@@ -412,41 +413,12 @@ class NodeFactory
     }
 
 
-    protected function createMeta($node, $key_prefix)
-    {
-
-        $className = $this->getClassByDiscriminator($node['dtype']);
-
-        // build the key for the node definition
-        $definitionKey = $key_prefix
-            ? ($key_prefix.NodeDefinitionResolver::KEY_SEPARATOR.$className)
-            : $className;
-
-        /**
-         * @var NodeDefinition $definition
-         */
-        $definition = $this->definitionResolver->resolveByKey($definitionKey);
-
-        $nodeMeta = new NodeMeta();
-        $nodeMeta
-            ->setId($node['id'])
-            ->setPosition($node['position'])
-            ->setClassname($className)
-            ->setDefinition($definition);
-            /*->setTags(array_merge(
-                ($parent ? $parent->getTags() : []),
-                ($this->tagRegistry->has($node['id'])
-                    ? [$this->tagRegistry->get($node['id'])]
-                    : []
-                )));*/
-
-        return $nodeMeta;
-    }
-
-
+    /**
+     * get a complete scalar list of all nodes
+     * @return array
+     */
     protected function getNodes()
     {
-
         static $nodes;
 
         if(!$nodes) {
