@@ -47,16 +47,17 @@ class NodeRouteResolver
             ->createQueryBuilder()
             ->select('nodeRoute, domain')
             ->from($this->repositoryClass, 'nodeRoute')
+            ->leftJoin('nodeRoute.domains', 'domain')
             ->where('nodeRoute.route = :route')
             ->setMaxResults(1)
             ->setParameter(':route', $routeUri);
 
         if ($domain) {
             $qb
-                ->leftJoin('nodeRoute.domains', 'domain')
                 ->andWhere(' domain is NULL OR domain.name = :domain')
                 ->setParameter(':domain', $domain);
         }
+
 
         $node = $qb->getQuery()->getResult();
 
