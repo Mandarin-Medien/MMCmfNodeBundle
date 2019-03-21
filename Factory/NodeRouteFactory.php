@@ -3,10 +3,12 @@
 namespace MandarinMedien\MMCmfNodeBundle\Factory;
 
 use Doctrine\ORM\EntityManagerInterface;
+use MandarinMedien\MMCmfNodeBundle\Entity\NodeInterface;
 use MandarinMedien\MMCmfNodeBundle\Entity\NodeRoute;
 use MandarinMedien\MMCmfNodeBundle\Entity\NodeRouteDomainInterface;
 use MandarinMedien\MMCmfNodeBundle\Entity\NodeRouteInterface;
 use MandarinMedien\MMCmfNodeBundle\Entity\RoutableNodeInterface;
+use mysql_xdevapi\BaseResult;
 
 /**
  * Class NodeRouteFactory
@@ -87,9 +89,17 @@ class NodeRouteFactory
      * @param $parentNode
      * @return array|NodeRouteDomainInterface[]
      */
-    public function getParentNodeRouteDomains(RoutableNodeInterface $parentNode = null)
+    public function getClosestRouteDomains(NodeInterface $node)
     {
         $domains = [];
+
+        // get the closet RoutableNodeInetrface
+        while ($parentNode = $node->getParent()) {
+            if($parentNode instanceof RoutableNodeInterface)
+                break;
+            else
+                $node = $parentNode;
+        }
 
         if (!$parentNode)
             return $domains;
