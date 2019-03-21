@@ -27,9 +27,9 @@ class NodeControllerWithResponseEvent extends NodeControllerEvent
      * @param NodeRouteInterface $nodeRoute
      * @param Response $response
      */
-    public function __construct(Request &$request, NodeRouteInterface &$nodeRoute, Response &$response)
+    public function __construct(Request $request, NodeRouteInterface $nodeRoute, Response $response)
     {
-       parent::__construct($request,$nodeRoute);
+        parent::__construct($request, $nodeRoute);
         $this->response = $response;
     }
 

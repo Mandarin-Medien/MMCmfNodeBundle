@@ -55,23 +55,16 @@ class NodeController extends Controller
                         'node' => $node,
                         'route' => $nodeRoute
                     );
-                    // before render - &$request, &$node, &$nodeRoute, &$templateFile, &$templateData
-                    $dispatcher->dispatch(NodeControllerEvents::BEFORE_RENDER, new NodeControllerWithTemplateDataEvent($request, $nodeRoute, $node, $templateData));
+                    // before render - &$request, &$node, &$nodeRoute, &$templateData, &$templateFile
+                    $dispatcher->dispatch(NodeControllerEvents::BEFORE_RENDER, new NodeControllerWithTemplateDataEvent($request, $nodeRoute, $node, $templateData, $templateFile));
 
-                    // render response
+                    /**
+                     * render response
+                     */
                     $response = $this->render($templateFile, $templateData);
 
                     // after render - &$request, &$node, &$nodeRoute, $templateFile, $templateData
                     $dispatcher->dispatch(NodeControllerEvents::AFTER_RENDER, new NodeControllerWithResponseEvent($request, $nodeRoute, $response));
-
-                    /**
-                     * should be configurable
-                     * cache for 1800 seconds
-                     */
-                    $response->setSharedMaxAge(1800);
-
-                    // (optional) set a custom Cache-Control directive
-                    $response->headers->addCacheControlDirective('must-revalidate', true);
 
                     // before response &$request, &$response, &$node, &$nodeRoute,
                     $dispatcher->dispatch(NodeControllerEvents::BEFORE_RESPONSE, new NodeControllerWithResponseEvent($request, $nodeRoute, $response));
