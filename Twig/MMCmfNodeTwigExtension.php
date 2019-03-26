@@ -65,7 +65,7 @@ class MMCmfNodeTwigExtension extends \Twig_Extension
      */
     public function render(\Twig_Environment $twig, TemplatableNodeInterface $node, string $template = null, array $options = [])
     {
-        $twig->render($template ?: $this->templateManager->getTemplate($node), [
+        return $twig->render($template ?: $this->templateManager->getTemplate($node), [
             'node' => $node
         ]);
     }

@@ -287,12 +287,11 @@ class NodeFactory
     }
 
     /**
-     * @param NodeInterface|null $node
      * @Todo: Implement caching
      * @return array
      * @throws
      */
-    public function getTree(NodeInterface $node = null)
+    public function getTree()
     {
         if(!$this->tree)
             $this->build();
@@ -362,7 +361,7 @@ class NodeFactory
                 $definition = $this->definitionResolver->resolveByKey($definitionKey);
 
 
-                $nodeMeta = new NodeMeta();
+                $nodeMeta = new NodeMeta($this->manager);
                 $nodeMeta
                     ->setName($node['name'])
                     ->setId($node['id'])

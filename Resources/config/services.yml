@@ -68,7 +68,9 @@ services:
             - {name: doctrine.event_listener, event: onFlush}
             - {name: doctrine.event_listener, event: postFlush}
 
+
     MandarinMedien\MMCmfNodeBundle\EventSubscriber\LanguageNodeInterfaceSubscriber: ~
+    MandarinMedien\MMCmfNodeBundle\EventSubscriber\RootNodeSubscriber: ~
 
     MandarinMedien\MMCmfNodeBundle\Controller\NodeController:
         tags: ['controller.service_arguments']
