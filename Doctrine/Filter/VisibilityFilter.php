@@ -4,7 +4,7 @@ namespace MandarinMedien\MMCmfNodeBundle\Doctrine\Filter;
 
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Query\Filter\SQLFilter;
-use FOS\UserBundle\Model\UserInterface;
+use Symfony\Component\Security\Core\User\UserInterface;
 use MandarinMedien\MMCmfNodeBundle\Entity\NodeInterface;
 
 
