@@ -48,7 +48,7 @@ class TemplateDefinitionResolver
     {
         if($definition = $this->nodeDefinitionResolver->resolve($node))
             return array_filter($definition->getTemplates(), function (TemplateDefinition $template) use ($node) {
-                return is_null($template->getTags())
+                return !($template->getTags())
                     || array_intersect($template->getTags(), $this->getTags($node));
             });
 
