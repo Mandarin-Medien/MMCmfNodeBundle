@@ -43,7 +43,7 @@ class TemplateManager
 
     /**
      * TemplateManager constructor.
-     * @param NodeFactory$factory
+     * @param NodeFactory $factory
      * @param TwigEngine $twig
      * @param KernelInterface $kernel
      * @param string $overrideDir
@@ -55,7 +55,6 @@ class TemplateManager
         $this->twig = $twig;
         $this->overrideDir = $overrideDir;
     }
-
 
 
     /**
@@ -92,7 +91,7 @@ class TemplateManager
         foreach ($this->kernel->getBundles() as $type => $bundle) {
             $bundleRefClass = new \ReflectionClass($bundle);
             if ($bundleRefClass->getNamespaceName() === $dataBaseNamespace) {
-                return '@'.preg_replace('/Bundle$/', '', $type);
+                return '@' . preg_replace('/Bundle$/', '', $type);
             }
         }
 
@@ -103,19 +102,25 @@ class TemplateManager
     /**
      * get the default template path if no templates are configured
      *
-     * @param string $bundleName
+     * @param NodeInterface $node
      * @return string
-     * @throws
+     * @throws \ReflectionException
      */
     public function getDefaultTemplate(NodeInterface $node)
     {
-
         $reflection = new \ReflectionClass(get_class($node));
         $name = $reflection->getShortName();
         $namespace = $reflection->getNamespaceName();
         $bundlePrefix = $this->getBundlePrefixFromEntity($namespace);
 
-        return $bundlePrefix . '/cmf/' . $name . '/' . $name . '_default.html.twig';
+        $entityNsString = '\\Entity';
+        $entityNsStringPos = strpos($namespace, $entityNsString);
+
+        $entityNamespace = substr($namespace, $entityNsStringPos + strlen($entityNsString)) ?: '';
+        if($entityNamespace)
+            $entityNamespace .= "/";
+
+        return $bundlePrefix . '/cmf/' . $entityNamespace . $name . '/' . $name . '_default.html.twig';
     }
 
 
@@ -131,16 +136,15 @@ class TemplateManager
         $nodeMeta = $this->factory->getNodeMeta($node);
         $tags = $nodeMeta->getTags();
 
-        foreach(array_reverse($tags) as $tag) {
+        foreach (array_reverse($tags) as $tag) {
 
-            if(preg_match('/^(@[a-zA-Z0-9_]+\/|[a-zA-Z0-9_]+:)(.+)/', $templatePath, $matches))
-            {
+            if (preg_match('/^(@[a-zA-Z0-9_]+\/|[a-zA-Z0-9_]+:)(.+)/', $templatePath, $matches)) {
                 $bundle = $matches[1];
                 $path = $matches[2];
 
-                $localTemplateTmp = $bundle.$this->overrideDir.'/'.$tag.'/'.$path;
+                $localTemplateTmp = $bundle . $this->overrideDir . '/' . $tag . '/' . $path;
 
-                if($this->twig->exists($localTemplateTmp)) {
+                if ($this->twig->exists($localTemplateTmp)) {
                     $templatePath = $localTemplateTmp;
                     break;
                 }
