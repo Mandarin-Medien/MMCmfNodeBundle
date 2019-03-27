@@ -3,7 +3,9 @@
 namespace MandarinMedien\MMCmfNodeBundle\Factory;
 
 
+use Doctrine\ORM\EntityManagerInterface;
 use MandarinMedien\MMCmfNodeBundle\Configuration\NodeDefinition;
+use MandarinMedien\MMCmfNodeBundle\Entity\NodeInterface;
 
 class NodeMeta
 {
@@ -73,8 +75,15 @@ class NodeMeta
     public $visible;
 
 
-    public function __construct()
+    /**
+     * @var EntityManagerInterface
+     */
+    protected $manager;
+
+
+    public function __construct(EntityManagerInterface $manager)
     {
+        $this->manager = $manager;
         $this->children = [];
     }
 
@@ -292,5 +301,17 @@ class NodeMeta
         $this->visible = $visible;
 
         return $this;
+    }
+
+
+    /**
+     * @return NodeInterface|object
+     */
+    public function load()
+    {
+        return $this->manager->find(
+            $this->getClassname(),
+            $this->getId()
+        );
     }
 }

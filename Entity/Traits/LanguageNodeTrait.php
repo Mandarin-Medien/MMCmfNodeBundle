@@ -18,7 +18,7 @@ trait LanguageNodeTrait
     /**
      * @return string
      */
-    public function getLocale():? string
+    public function getLocale()
     {
         return $this->locale;
     }
