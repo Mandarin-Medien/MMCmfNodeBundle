@@ -5,6 +5,7 @@ namespace MandarinMedien\MMCmfNodeBundle\Templating;
 use MandarinMedien\MMCmfNodeBundle\Entity\NodeInterface;
 use MandarinMedien\MMCmfNodeBundle\Entity\TemplatableNodeInterface;
 use MandarinMedien\MMCmfNodeBundle\Factory\NodeFactory;
+use MandarinMedien\MMCmfNodeBundle\Resolver\TemplateDefinitionResolver;
 use MandarinMedien\MMSearchBundle\Serializer\Factory;
 use Symfony\Bundle\TwigBundle\TwigEngine;
 use Symfony\Component\HttpKernel\KernelInterface;
@@ -40,6 +41,10 @@ class TemplateManager
      */
     protected $twig;
 
+    /**
+     * @var TemplateDefinitionResolver
+     */
+    protected $definitionResolver;
 
     /**
      * TemplateManager constructor.
@@ -48,12 +53,13 @@ class TemplateManager
      * @param KernelInterface $kernel
      * @param string $overrideDir
      */
-    public function __construct(NodeFactory $factory, TwigEngine $twig, KernelInterface $kernel, string $overrideDir)
+    public function __construct(NodeFactory $factory, TwigEngine $twig, KernelInterface $kernel, string $overrideDir, TemplateDefinitionResolver $definitionResolver)
     {
         $this->factory = $factory;
         $this->kernel = $kernel;
         $this->twig = $twig;
         $this->overrideDir = $overrideDir;
+        $this->definitionResolver = $definitionResolver;
     }
 
 
@@ -67,12 +73,18 @@ class TemplateManager
      */
     public function getTemplate(TemplatableNodeInterface $node)
     {
+        $template = $node->getTemplate();
 
-        $template = $node->getTemplate()
-            ?: $this->getDefaultTemplate($node);
+        if (!$template) {
+            $templateDefinitions = $this->definitionResolver->resolve($node);
+            if (count($templateDefinitions) > 0)
+                $template = $templateDefinitions[0]->getPath();
+        }
+
+        if (!$template)
+            $template = $this->getDefaultTemplate($node);
 
         return $this->resolveLocalTemplate($template, $node) ?? $template;
-
     }
 
 
@@ -117,7 +129,7 @@ class TemplateManager
         $entityNsStringPos = strpos($namespace, $entityNsString);
 
         $entityNamespace = substr($namespace, $entityNsStringPos + strlen($entityNsString)) ?: '';
-        if($entityNamespace)
+        if ($entityNamespace)
             $entityNamespace .= "/";
 
         return $bundlePrefix . '/cmf/' . $entityNamespace . $name . '/' . $name . '_default.html.twig';
