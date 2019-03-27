@@ -1,0 +1,4 @@
+doctrine:
+    orm:
+        resolve_target_entities:
+            MandarinMedien\MMCmfNodeBundle\Entity\NodeRouteDomainInterface:  MandarinMedien\MMCmfNodeBundle\Entity\NodeRouteDomain
