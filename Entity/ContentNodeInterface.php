@@ -2,6 +2,6 @@
 
 namespace MandarinMedien\MMCmfNodeBundle\Entity;
 
-interface ContentNodeInterface
+interface ContentNodeInterface extends TemplatableNodeInterface
 {
 }
