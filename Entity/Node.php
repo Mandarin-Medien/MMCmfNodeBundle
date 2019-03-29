@@ -32,7 +32,7 @@ class Node extends BaseNode
 
     /**
      * @ORM\Column(type="integer")
-     * @Gedmo\Sortable(groups={"parent"})
+     * @Gedmo\SortablePosition
      * @var integer
      */
     protected $position = 0;
@@ -53,6 +53,7 @@ class Node extends BaseNode
     /**
      * @ORM\ManyToOne(targetEntity=Node::class, inversedBy="nodes")
      * @ORM\JoinColumn(onDelete="SET NULL")
+     * @Gedmo\SortableGroup
      * @var Node
      */
     protected $parent;
