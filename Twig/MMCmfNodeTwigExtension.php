@@ -2,13 +2,20 @@
 
 namespace MandarinMedien\MMCmfNodeBundle\Twig;
 
+use MandarinMedien\MMCmfNodeBundle\Entity\ContentNodeInterface;
+use MandarinMedien\MMCmfNodeBundle\Entity\NodeInterface;
 use MandarinMedien\MMCmfNodeBundle\Entity\TemplatableNodeInterface;
 use MandarinMedien\MMCmfNodeBundle\Factory\NodeFactory;
 use MandarinMedien\MMCmfNodeBundle\Templating\TemplateManager;
+use Symfony\Bundle\TwigBundle\DependencyInjection\TwigExtension;
 use Symfony\Component\HttpKernel\KernelInterface;
+use Twig\Environment;
+use Twig\Extension\AbstractExtension;
+use Twig\TwigFilter;
+use Twig\TwigFunction;
 
 
-class MMCmfNodeTwigExtension extends \Twig_Extension
+class MMCmfNodeTwigExtension extends AbstractExtension
 {
 
     /**
@@ -42,14 +49,18 @@ class MMCmfNodeTwigExtension extends \Twig_Extension
     public function getFilters()
     {
         return [
-            new \Twig_SimpleFilter('class_discriminator', [$this->nodeFactory, 'getDiscriminatorByClassName'])
+            new TwigFilter('class_discriminator', [$this->nodeFactory, 'getDiscriminatorByClassName'])
         ];
     }
 
     public function getFunctions()
     {
         return [
-            new \Twig_SimpleFunction('renderNode', [$this, "render"], [
+            new TwigFunction('renderNode', [$this, "render"], [
+                'is_safe' => ['html'],
+                'needs_environment' => true
+            ]),
+            new TwigFunction('renderNodeChildren', [$this, "renderChildren"], [
                 'is_safe' => ['html'],
                 'needs_environment' => true
             ])
@@ -58,19 +69,58 @@ class MMCmfNodeTwigExtension extends \Twig_Extension
 
 
     /**
+     * render children funtion
+     *
+     * this function is aware oft the class to render (default ContentNodeInterface)
+     *
+     * @param Environment $twig
+     * @param NodeInterface $node
+     * @param array $classes
+     * @return string
+     * @throws
+     */
+    public function renderChildren(Environment $twig, NodeInterface $node, array $classes = [ContentNodeInterface::class])
+    {
+        $content = '';
+
+        foreach ($node->getNodes() as $childNode) {
+
+            // test class instance
+            foreach ($classes as $className)
+                if (true === ($passed = ($node instanceof $className)))
+                    break;
+
+            // skip rendering when class is not allowed
+            if (!$passed)
+                return '';
+
+            $content += $this->render($twig, $node);
+        }
+
+        return $content;
+
+    }
+
+
+    /**
+     * render the given node
+     *
      * @param \Twig_Environment $twig
      * @param TemplatableNodeInterface $node
      * @param string|null $template
      * @param array $options
      * @return string
      *
-     * @throws \Twig_Error_Loader
-     * @throws \Twig_Error_Runtime
-     * @throws \Twig_Error_Syntax
-     * @throws \ReflectionException
+     * @throws
      */
-    public function render(\Twig_Environment $twig, TemplatableNodeInterface $node, string $template = null, array $options = [])
-    {
+    public function render(
+        Environment $twig,
+        TemplatableNodeInterface $node,
+        string $template = null,
+        array $options = []
+    ) {
+
+
         $refClass = new \ReflectionClass($node);
         $className = trim(str_replace($refClass->getNamespaceName(), '', $refClass->getName()), '\\');
         $display_classes = [$className];
@@ -80,5 +130,4 @@ class MMCmfNodeTwigExtension extends \Twig_Extension
             'display_classes' => implode(" ", $display_classes),
         ]);
     }
-
 }
