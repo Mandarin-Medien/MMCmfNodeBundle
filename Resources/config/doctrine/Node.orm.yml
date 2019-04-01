@@ -17,9 +17,7 @@ MandarinMedien\MMCmfNodeBundle\Entity\Node:
         position:
             type: integer
             gedmo:
-                sortable:
-                    groups:
-                      - parent
+                - sortablePosition
         visible:
             type: boolean
 
@@ -38,6 +36,8 @@ MandarinMedien\MMCmfNodeBundle\Entity\Node:
                   onDelete: "SET NULL"
             inversedBy: nodes
             nullable: true
+            gedmo:
+                - sortableGroup
 
 
     lifecycleCallbacks: {  }

@@ -17,6 +17,6 @@
     "psr-4": {"MandarinMedien\\MMCmfNodeBundle\\": ""}
   },
   "require": {
-    "gedmo/doctrine-extensions": "dev-master"
+    "gedmo/doctrine-extensions": "^2.4"
   }
 }
