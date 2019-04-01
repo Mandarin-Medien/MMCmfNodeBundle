@@ -9,6 +9,7 @@ use MandarinMedien\MMCmfNodeBundle\Resolver\TemplateDefinitionResolver;
 use MandarinMedien\MMSearchBundle\Serializer\Factory;
 use Symfony\Bundle\TwigBundle\TwigEngine;
 use Symfony\Component\HttpKernel\KernelInterface;
+use Symfony\Component\Templating\EngineInterface;
 
 /**
  * Class TemplateManager
@@ -49,11 +50,12 @@ class TemplateManager
     /**
      * TemplateManager constructor.
      * @param NodeFactory $factory
-     * @param TwigEngine $twig
+     * @param EngineInterface $twig
      * @param KernelInterface $kernel
      * @param string $overrideDir
+     * @param TemplateDefinitionResolver $definitionResolver
      */
-    public function __construct(NodeFactory $factory, TwigEngine $twig, KernelInterface $kernel, string $overrideDir, TemplateDefinitionResolver $definitionResolver)
+    public function __construct(NodeFactory $factory, EngineInterface $twig, KernelInterface $kernel, string $overrideDir, TemplateDefinitionResolver $definitionResolver)
     {
         $this->factory = $factory;
         $this->kernel = $kernel;

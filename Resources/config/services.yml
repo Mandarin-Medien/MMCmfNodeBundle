@@ -5,9 +5,24 @@ services:
         autoconfigure: true
         public: false
 
-    MandarinMedien\MMCmfNodeBundle\Configuration\NodeRegistry: ~
+    _instanceof:
+        Sensio\Bundle\FrameworkExtraBundle\Request\ParamConverter\ParamConverterInterface:
+            tags: [{name: request.param_converter, priority: -1}]
 
-    MandarinMedien\MMCmfNodeBundle\Configuration\TagRegistry: ~
+    MandarinMedien\MMCmfNodeBundle\:
+        resource: "../../*"
+        exclude: "../../{Entity,Resources,Model,Exception}"
+
+    MandarinMedien\MMCmfNodeBundle\Controller\:
+        resource: "../../Controller"
+        tags: [controller.service_arguments]
+
+
+    MandarinMedien\MMCmfNodeBundle\Configuration\NodeRegistry:
+        public: true
+
+    MandarinMedien\MMCmfNodeBundle\Configuration\TagRegistry:
+        public: true
 
     MandarinMedien\MMCmfNodeBundle\Factory\NodeFactory:
         public: true
@@ -21,44 +36,28 @@ services:
     MandarinMedien\MMCmfNodeBundle\Resolver\NodeResolver:
         public: true
 
+    MandarinMedien\MMCmfNodeBundle\Resolver\NodeRouteResolver:
+        public: true
+
     MandarinMedien\MMCmfNodeBundle\Resolver\NodeDefinitionResolver:
+        public: true
+
+    MandarinMedien\MMCmfNodeBundle\Resolver\TemplateDefinitionResolver:
         public: true
 
     MandarinMedien\MMCmfNodeBundle\Templating\TemplateManager:
         public: true
 
-    MandarinMedien\MMCmfNodeBundle\Request\NodeParamConverter:
-        tags:
-            - {name: request.param_converter, priority: 1, converter: mm_cmf_node.node_converter }
-
-    MandarinMedien\MMCmfNodeBundle\Request\NodeRouteParamConverter:
-        tags:
-            - {name: request.param_converter, priority: 1, converter: MandarinMedien\MMCmfNodeBundle\Request\NodeRouteParamConverter }
-
-    MandarinMedien\MMCmfNodeBundle\Twig\MMCmfNodeTwigExtension:
-        tags:
-            - {name: twig.extension}
-
-    mm_cmf_node.gedmo.sortable:
-        class: Gedmo\Sortable\SortableListener
-        tags:
-            - { name: doctrine.event_subscriber, connection: default }
+    Gedmo\Sortable\SortableListener:
+        tags: [{ name: doctrine.event_subscriber, connection: default }]
         calls:
             - ['setAnnotationReader', ['@annotation_reader']]
 
+
     # configure the visibilty filter on request
-
     MandarinMedien\MMCmfNodeBundle\Doctrine\Filter\VisibilityFilterConfigurator:
-        calls:
-            - {method: setRoles, arguments: [["ROLE_ADMIN", "ROLE_USER"]]}
-        tags:
-            - { name: kernel.event_listener, event: kernel.request }
-
-
-    # Validation Constraints
-    MandarinMedien\MMCmfNodeBundle\Validator\Constraint\NodeRouteUniqueValidator:
-        tags:
-            - { name: validator.constraint_validator, alias: "node_route_unique" }
+        calls: [{method: setRoles, arguments: [["ROLE_ADMIN", "ROLE_USER"]]}]
+        tags: [{ name: kernel.event_listener, event: kernel.request }]
 
 
     # Doctrine Event Listener
@@ -68,12 +67,3 @@ services:
             - {name: doctrine.event_listener, event: onFlush}
             - {name: doctrine.event_listener, event: postFlush}
 
-
-    MandarinMedien\MMCmfNodeBundle\EventSubscriber\LanguageNodeInterfaceSubscriber: ~
-    MandarinMedien\MMCmfNodeBundle\EventSubscriber\RootNodeSubscriber: ~
-
-    MandarinMedien\MMCmfNodeBundle\Controller\NodeController:
-        tags: ['controller.service_arguments']
-
-    foo:
-        alias: "@templating"
