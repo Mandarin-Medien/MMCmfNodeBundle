@@ -58,8 +58,6 @@ class NodeParamConverter implements ParamConverterInterface
      */
     function supports(ParamConverter $configuration)
     {
-        dump('supports');
-
         if($configuration->getClass()) {
             return $configuration->getClass() === NodeInterface::class;
         }
