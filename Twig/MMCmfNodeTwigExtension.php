@@ -86,14 +86,14 @@ class MMCmfNodeTwigExtension extends AbstractExtension
 
             // test class instance
             foreach ($classes as $className)
-                if (true === ($passed = ($node instanceof $className)))
+                if (true === ($passed = ($childNode instanceof $className)))
                     break;
 
             // skip rendering when class is not allowed
             if (!$passed)
                 return '';
 
-            $content += $this->render($twig, $node);
+            $content .= $this->render($twig, $childNode);
         }
 
         return $content;
