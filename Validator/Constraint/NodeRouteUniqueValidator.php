@@ -39,7 +39,6 @@ class NodeRouteUniqueValidator extends ConstraintValidator
     public function validate($nodeRoute, Constraint $constraint)
     {
 
-        dump($nodeRoute);
 
         /**
          * @var NodeRoute $nodeRoute
