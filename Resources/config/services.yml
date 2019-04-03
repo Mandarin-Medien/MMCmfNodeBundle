@@ -7,7 +7,7 @@ services:
 
     _instanceof:
         Sensio\Bundle\FrameworkExtraBundle\Request\ParamConverter\ParamConverterInterface:
-            tags: [{name: request.param_converter, priority: -1}]
+            tags: [{name: request.param_converter, priority: 1}]
 
     MandarinMedien\MMCmfNodeBundle\:
         resource: "../../*"
