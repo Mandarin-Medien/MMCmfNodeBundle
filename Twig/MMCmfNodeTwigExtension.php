@@ -91,7 +91,7 @@ class MMCmfNodeTwigExtension extends AbstractExtension
 
             // skip rendering when class is not allowed
             if (!$passed)
-                return '';
+                continue;
 
             $content .= $this->render($twig, $childNode);
         }
