@@ -19,12 +19,10 @@ use utilphp\util;
  */
 class NodeRouteManager
 {
-
     /**
      * @var EntityManagerInterface
      */
     protected $manager;
-
 
     /**
      * NodeRouteManager constructor.
@@ -35,7 +33,6 @@ class NodeRouteManager
         $this->manager = $manager;
     }
 
-
     /**
      * generates a AutoNodeRoute for a given Node
      *
@@ -44,10 +41,7 @@ class NodeRouteManager
      */
     public function generateAutoNodeRoute(RoutableNodeInterface $node)
     {
-
-
-        $route = (new AutoNodeRoute())
-            ->setRoute('/' . $this->slugify($node));
+        $route = (new AutoNodeRoute())->setRoute('/' . $this->slugify($node));
 
         /**
          * @var Node $parent
@@ -58,9 +52,7 @@ class NodeRouteManager
         }
 
         // add increment if route exists
-        $route->setRoute(
-            $route->getRoute().$this->getIncrement($route->getRoute())
-        );
+        $route->setRoute($route->getRoute() . $this->getIncrement($route->getRoute()));
 
         return $route;
     }
@@ -75,11 +67,9 @@ class NodeRouteManager
      */
     public function getAutoNodeRoutesRecursive(NodeInterface &$node, $base = null, &$routeObjects = array())
     {
-
         $route = $this->getAutoNodeRoute($node);
 
-        if($route) {
-
+        if ($route) {
 
             $route->setRoute(
                 $base ? $base . '/' . util::slugify($node->getName())
@@ -87,15 +77,13 @@ class NodeRouteManager
             );
 
             // add soft Increment
-            $route->setRoute($route->getRoute().$this->softIncrement($route, $routeObjects));
-
+            $route->setRoute($route->getRoute() . $this->softIncrement($route, $routeObjects));
 
             $routeObjects[] = $route;
 
-
             // recursive loop
             foreach ($node->getNodes() as $subnode) {
-                if($subnode instanceof RoutableNodeInterface)
+                if ($subnode instanceof RoutableNodeInterface)
                     $this->getAutoNodeRoutesRecursive($subnode, $this->getAutoNodeRoute($node)->getRoute(), $routeObjects);
             }
         }
@@ -103,7 +91,6 @@ class NodeRouteManager
 
         return $routeObjects;
     }
-
 
     /**
      * generate an url-friendly string from Node::name
@@ -115,7 +102,6 @@ class NodeRouteManager
         return util::slugify($node->getName());
     }
 
-
     /**
      * return the AutoNodeRoute::route of the given Node entity
      * @param NodeInterface $node
@@ -123,8 +109,8 @@ class NodeRouteManager
      */
     protected function getAutoNodeRoute(RoutableNodeInterface $node)
     {
-        foreach($node->getRoutes() as $route) {
-            if($route instanceof AutoNodeRoute) {
+        foreach ($node->getRoutes() as $route) {
+            if ($route instanceof AutoNodeRoute) {
                 return $route;
             }
         }
@@ -138,28 +124,18 @@ class NodeRouteManager
      */
     protected function getIncrement($route)
     {
-
-       // var_dump($route);
-
         $mapper = new ResultSetMapping();
         $mapper->addScalarResult('route', 'route');
+        $mySqlVersion = $this->manager->getConnection()->getParams()['serverVersion'];
 
-
-        $builder = $this->manager->createNativeQuery(
-            'SELECT route FROM node_route WHERE route REGEXP ?',
-            $mapper
-        )
-        ->setParameter('1', $this->prepareMysqlRegexp($route));
-
-        //var_dump($builder->getArrayResult());
-
+        $builder = $this->manager
+            ->createNativeQuery('SELECT route FROM node_route WHERE route REGEXP ?', $mapper)
+            ->setParameter('1', $this->prepareMysqlRegexp($route, $mySqlVersion));
 
         $i = 0;
-        foreach($builder->getArrayResult() as $_route)
-        {
-
-            if(preg_match('#\(([0-9])*\)$#', $_route['route'], $matches)) {
-                $i = (int) $matches[1] == $i  ? (int) $matches[1]+1 : $i;
+        foreach ($builder->getArrayResult() as $_route) {
+            if (preg_match('#\(([0-9])*\)$#', $_route['route'], $matches)) {
+                $i = (int)$matches[1] == $i ? (int)$matches[1] + 1 : $i;
             } else {
                 $i++;
             }
@@ -177,20 +153,19 @@ class NodeRouteManager
      */
     public function softIncrement($route, array $routes)
     {
-
         // flat the route array
-        $flatten = array_map(function($route) {
+        $flatten = array_map(function ($route) {
             return $route->getRoute();
         }, $routes);
 
         $i = 0;
 
-        array_walk($routes, function($_route) use($route, &$i) {
+        array_walk($routes, function ($_route) use ($route, &$i) {
 
-            $search = "#".addcslashes(preg_replace('/\([0-9]+\)*$/', "", $route),'()').'(\([0-9]+\))*$#';
+            $search = "#" . addcslashes(preg_replace('/\([0-9]+\)*$/', "", $route), '()') . '(\([0-9]+\))*$#';
 
-            if(preg_match($search, $_route->getRoute(), $matches)) {
-                if(count($matches) == 2) {
+            if (preg_match($search, $_route->getRoute(), $matches)) {
+                if (count($matches) == 2) {
                     $i = (int)$matches[1] == $i ? (int)$matches[1] + 1 : $i;
                 } else {
                     $i++;
@@ -207,22 +182,23 @@ class NodeRouteManager
      * @param $string NodeRoute::route
      * @return string
      */
-    protected function prepareMysqlRegexp($string)
+    protected function prepareMysqlRegexp($string, $mySqlVersion = null)
     {
         $regexp = $string;
 
         // first remove trailing increment
         $regexp = preg_replace('/\([0-9]\)$/', "", $regexp);
 
+
         // escape existing parenthesis
         $regexp = preg_replace('(\(|\))', '\\\\${0}', $regexp);
 
         // append matching mysql matching pattern
-        $regexp .= "([[.left-parenthesis.]][0-9]*[[.right-parenthesis.]])*$";
+        if ($mySqlVersion === null || $mySqlVersion < 8)
+            $regexp .= "([[.left-parenthesis.]][0-9]*[[.right-parenthesis.]])*$";
+        else
+            $regexp .= "([[(]][0-9]*[[)]])*$";
 
         return $regexp;
-
     }
-
-
 }
