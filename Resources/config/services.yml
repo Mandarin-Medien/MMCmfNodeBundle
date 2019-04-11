@@ -53,13 +53,6 @@ services:
         calls:
             - ['setAnnotationReader', ['@annotation_reader']]
 
-
-    # configure the visibilty filter on request
-    MandarinMedien\MMCmfNodeBundle\Doctrine\Filter\VisibilityFilterConfigurator:
-        calls: [{method: setRoles, arguments: [["ROLE_ADMIN", "ROLE_USER"]]}]
-        tags: [{ name: kernel.event_listener, event: kernel.request }]
-
-
     # Doctrine Event Listener
     MandarinMedien\MMCmfNodeBundle\EventListener\NodeRouteListener:
         tags:

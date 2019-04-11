@@ -16,6 +16,7 @@ use MandarinMedien\MMCmfNodeBundle\Resolver\NodeRouteResolver;
 use Symfony\Component\HttpKernel\Event\GetResponseEvent;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpKernel\KernelEvents;
+use Symfony\Component\Translation\TranslatorInterface;
 
 class LanguageNodeInterfaceSubscriber implements EventSubscriberInterface
 {
@@ -38,6 +39,10 @@ class LanguageNodeInterfaceSubscriber implements EventSubscriberInterface
      * @var EntityManagerInterface
      */
     private $entityManager;
+    /**
+     * @var TranslatorInterface
+     */
+    private $translator;
 
     /**
      * LanguageNodeInterfaceSubscriber constructor.
@@ -46,12 +51,13 @@ class LanguageNodeInterfaceSubscriber implements EventSubscriberInterface
      * @param NodeResolver $nodeResolver
      * @param EntityManagerInterface $entityManager
      */
-    public function __construct(NodeFactory $factory, NodeRouteResolver $nodeRouteResolver, NodeResolver $nodeResolver, EntityManagerInterface $entityManager)
+    public function __construct(NodeFactory $factory, NodeRouteResolver $nodeRouteResolver, NodeResolver $nodeResolver, TranslatorInterface $translator, EntityManagerInterface $entityManager)
     {
         $this->factory = $factory;
         $this->nodeRouteResolver = $nodeRouteResolver;
         $this->nodeResolver = $nodeResolver;
         $this->entityManager = $entityManager;
+        $this->translator = $translator;
     }
 
     /**
@@ -89,6 +95,7 @@ class LanguageNodeInterfaceSubscriber implements EventSubscriberInterface
                         $languageNode = $this->entityManager->find($nodeMeta->getClassname(), $nodeMeta->getId());
                         if ($languageNode && $locale = $languageNode->getLocale()) {
                             $request->setLocale($locale);
+                            $this->translator->setLocale($locale);
                         }
                     }
                 }
@@ -102,7 +109,7 @@ class LanguageNodeInterfaceSubscriber implements EventSubscriberInterface
     public static function getSubscribedEvents()
     {
         return [
-            KernelEvents::REQUEST => ['onKernelRequest', 17],
+            KernelEvents::REQUEST => ['onKernelRequest', 0],
         ];
     }
 }

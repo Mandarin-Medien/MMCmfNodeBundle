@@ -84,7 +84,7 @@ class NodeController extends Controller
             // before not found -  &$request, &$nodeRoute
             $dispatcher->dispatch(NodeControllerEvents::BEFORE_NOT_FOUND, new NodeControllerEvent($request, $nodeRoute));
 
-            throw new NotFoundHttpException();
+            throw new NotFoundHttpException(sprintf('The route %s was found but the node could not get resolved. Either the Route (#%s) is an orphan or the node is not visible.', $nodeRoute->getRoute(), $nodeRoute->getId()));
         }
     }
 

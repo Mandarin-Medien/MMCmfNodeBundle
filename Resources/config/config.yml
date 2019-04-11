@@ -1,5 +1,10 @@
 doctrine:
     orm:
+        filters:
+            MandarinMedien\MMCmfNodeBundle\Doctrine\Filter\VisibilityFilter:
+                class: MandarinMedien\MMCmfNodeBundle\Doctrine\Filter\VisibilityFilter
+                enabled: true
+
         resolve_target_entities:
             MandarinMedien\MMCmfNodeBundle\Entity\NodeRouteDomainInterface:  MandarinMedien\MMCmfNodeBundle\Entity\NodeRouteDomain
 

@@ -2,12 +2,15 @@
 
 namespace MandarinMedien\MMCmfNodeBundle\Twig;
 
+use MandarinMedien\MMCmfNodeBundle\Entity\AutoNodeRoute;
 use MandarinMedien\MMCmfNodeBundle\Entity\ContentNodeInterface;
 use MandarinMedien\MMCmfNodeBundle\Entity\NodeInterface;
+use MandarinMedien\MMCmfNodeBundle\Entity\RoutableNodeInterface;
 use MandarinMedien\MMCmfNodeBundle\Entity\TemplatableNodeInterface;
 use MandarinMedien\MMCmfNodeBundle\Factory\NodeFactory;
 use MandarinMedien\MMCmfNodeBundle\Templating\TemplateManager;
 use Symfony\Component\HttpKernel\KernelInterface;
+use Symfony\Component\Routing\RouterInterface;
 use Twig\Environment;
 use Twig\Extension\AbstractExtension;
 use Twig\TwigFilter;
@@ -33,16 +36,22 @@ class MMCmfNodeTwigExtension extends AbstractExtension
     protected $kernel;
 
     /**
+     * @var RouterInterface
+     */
+    private $router;
+
+    /**
      * MMCmfNodeTwigExtension constructor.
      * @param NodeFactory $factory
      * @param TemplateManager $manager
      * @param KernelInterface $kernel
      */
-    public function __construct(NodeFactory $factory, TemplateManager $manager, KernelInterface $kernel)
+    public function __construct(NodeFactory $factory, TemplateManager $manager, RouterInterface $router, KernelInterface $kernel)
     {
         $this->templateManager = $manager;
         $this->nodeFactory = $factory;
         $this->kernel = $kernel;
+        $this->router = $router;
     }
 
     public function getFilters()
@@ -62,7 +71,8 @@ class MMCmfNodeTwigExtension extends AbstractExtension
             new TwigFunction('renderNodeChildren', [$this, "renderChildren"], [
                 'is_safe' => ['html'],
                 'needs_environment' => true
-            ])
+            ]),
+            new TwigFunction("nodePath", [$this, "nodePath"])
         ];
     }
 
@@ -127,6 +137,14 @@ class MMCmfNodeTwigExtension extends AbstractExtension
         return $twig->render($template ?: $this->templateManager->getTemplate($node), [
             'node' => $node,
             'display_classes' => implode(" ", $display_classes),
+        ]);
+    }
+
+
+    public function nodePath(RoutableNodeInterface $routableNode)
+    {
+        return $this->router->generate('mm_cmf_node', [
+            "route" => $routableNode->getRoutes()->first()
         ]);
     }
 }
