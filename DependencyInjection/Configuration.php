@@ -44,7 +44,7 @@ class Configuration implements ConfigurationInterface
                 ->arrayNode('routing')
                     ->addDefaultsIfNotSet()
                     ->children()
-                        ->booleanNode('redirect_trailing_slash')->defaultTrue()->end()
+                        ->booleanNode('redirect_trailing_slash')->defaultFalse()->end()
                         ->arrayNode('defaults')
                             ->children()
                                 ->scalarNode('template')->end()
