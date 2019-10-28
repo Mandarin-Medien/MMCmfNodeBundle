@@ -8,8 +8,10 @@ use MandarinMedien\MMCmfNodeBundle\Entity\NodeRouteInterface;
 use MandarinMedien\MMCmfNodeBundle\Resolver\NodeRouteResolver;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Request\ParamConverter\ParamConverterInterface;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\Routing\RouterInterface;
 
 class NodeRouteParamConverter implements ParamConverterInterface
 {
@@ -18,9 +20,18 @@ class NodeRouteParamConverter implements ParamConverterInterface
      */
     private $nodeRouteResolver;
 
-    public function __construct(NodeRouteResolver $nodeRouteResolver)
+
+    private $redirectTrailingSlash = false;
+    /**
+     * @var RouterInterface
+     */
+    private $router;
+
+
+    public function __construct(NodeRouteResolver $nodeRouteResolver, RouterInterface $router)
     {
         $this->nodeRouteResolver = $nodeRouteResolver;
+        $this->router = $router;
     }
 
     /**
@@ -45,7 +56,40 @@ class NodeRouteParamConverter implements ParamConverterInterface
             return true;
         }
 
+        /**
+         *
+         * if Route is not Found and the url contains a trailing slash
+         * send a RedirectResponse to same URL without Trailing slash
+         */
+        if($this->getRedirectTrailingSlash() && preg_match('/^(.+)\/$/',$request->getPathInfo()))
+        {
+            $url = preg_replace('/\/$/', '', $this->router->getContext()->getBaseUrl().$request->getPathInfo());
+            $response = new RedirectResponse($url, 301);
+            $response->send();
+            die();
+        }
+
+
+
         throw new NotFoundHttpException('Route ' . $routeUri . ' not found.');
+    }
+
+    /**
+     * @return bool
+     */
+    public function getRedirectTrailingSlash(): bool
+    {
+        return $this->redirectTrailingSlash;
+    }
+
+    /**
+     * @param bool $redirectTrailingSlash
+     * @return NodeRouteParamConverter
+     */
+    public function setRedirectTrailingSlash(bool $redirectTrailingSlash)
+    {
+        $this->redirectTrailingSlash = $redirectTrailingSlash;
+        return $this;
     }
 
 

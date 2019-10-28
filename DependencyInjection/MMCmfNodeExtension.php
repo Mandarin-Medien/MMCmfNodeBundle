@@ -3,6 +3,7 @@
 namespace MandarinMedien\MMCmfNodeBundle\DependencyInjection;
 
 use MandarinMedien\MMCmfNodeBundle\Factory\NodeFactory;
+use MandarinMedien\MMCmfNodeBundle\Request\NodeRouteParamConverter;
 use MandarinMedien\MMCmfNodeBundle\Templating\TemplateManager;
 use MandarinMedien\MMCmfNodeBundle\Configuration\NodeDefinition;
 use MandarinMedien\MMCmfNodeBundle\Configuration\NodeRegistry;
@@ -41,6 +42,14 @@ class MMCmfNodeExtension extends Extension
         $tagRegistry = $container->getDefinition(TagRegistry::class);
         $templateManager = $container->getDefinition(TemplateManager::class);
         $templateManager->setArgument('$overrideDir', $config['templating']['override_dir']);
+
+        // trailing slashes redirection
+        if($config['routing']) {
+            $nodeRouterParamConverter = $container->getDefinition(NodeRouteParamConverter::class);
+            $nodeRouterParamConverter->addMethodCall('setRedirectTrailingSlash', [
+                $config['routing']['redirect_trailing_slash']
+            ]);
+        }
 
 
         $nodeFactory
