@@ -24,7 +24,7 @@ class NoNodeRecursionValidator extends ConstraintValidator
     /**
      * {@inheritdoc}
      */
-    public function validate($node = null, Constraint $constraint)
+    public function validate($node, Constraint $constraint)
     {
         /**
          * @var $node NodeInterface
